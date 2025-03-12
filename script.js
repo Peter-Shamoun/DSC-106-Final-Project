@@ -421,7 +421,7 @@ function createLinePlot(data, filteredSex = "all") {
           enter => enter.append("path")
             .attr("class", "line")
             .attr("fill", "none")
-            .attr("stroke", d => colorScale(d[0]))
+            .attr("stroke", d => d[1][0].sex === "male" ? "blue" : "red")
             .attr("stroke-width", 1.5)
             .attr("opacity", 0.6)
             .attr("d", d => d3.line()
@@ -431,6 +431,7 @@ function createLinePlot(data, filteredSex = "all") {
             ),
           update => update.transition()
             .duration(1000)
+            .attr("stroke", d => d[1][0].sex === "male" ? "blue" : "red")
             .attr("d", d => d3.line()
               .x(d => xScale(d.minute))
               .y(d => yScale(d.temperature))
