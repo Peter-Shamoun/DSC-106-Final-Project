@@ -281,6 +281,12 @@ function setupFiltersTemperatureLinePlot() {
   // Remove previous filter
   d3.select("#filter-container2").html("");
   
+  // Add label
+  d3.select("filter-container2")
+    .append("label")
+    .attr("for", "sex-filter2")
+    .text("Select Sex:");
+  
   // Create dropdown for sex filter
   const sexDropdownLine = d3.select("#filter-container2")
     .append("select")
@@ -304,6 +310,12 @@ function setupFiltersActivityLinePlot() {
   // Remove previous filter
   d3.select("#filter-container2").html("");
   
+  // Add label
+  d3.select("filter-container2")
+    .append("label")
+    .attr("for", "sex-filter2")
+    .text("Select Sex:");
+
   // Create dropdown for sex filter
   const sexDropdownLine = d3.select("#filter-container2")
     .append("select")
