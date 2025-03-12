@@ -282,7 +282,7 @@ function setupFiltersTemperatureLinePlot() {
   d3.select("#filter-container2").html("");
   
   // Add label
-  d3.select("filter-container2")
+  d3.select("#filter-container2")
     .append("label")
     .attr("for", "sex-filter2")
     .text("Select Sex:");
@@ -311,7 +311,7 @@ function setupFiltersActivityLinePlot() {
   d3.select("#filter-container2").html("");
   
   // Add label
-  d3.select("filter-container2")
+  d3.select("#filter-container2")
     .append("label")
     .attr("for", "sex-filter2")
     .text("Select Sex:");
