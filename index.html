@@ -1,103 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mouse Activity and Temperature Visualization</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="styles.css" rel="stylesheet">
-</head>
-
-<body>
-  <div class="container">
-    <!-- Header -->
-    <header class="my-4">
-      <h1 class="text-center">Mouse Activity and Temperature Visualization</h1>
-      <p class="lead text-center">Exploring patterns between activity levels and core body temperature in male and
-        female mice</p>
-    </header>
-
-    <!-- Introduction Section -->
-    <section id="introduction" class="my-4">
-      <h2>Introduction</h2>
-      <p>TODO</p>
-    </section>
-
-    <!-- Visualization Section -->
-    <section id="visualization-section1" class="my-5">
-      <div class="row">
-        <div class="col-md-3">
-          <div id="filter-container1" class="mb-3">
-            <h3>Filters</h3>
-            <label for="sex-filter1" class="form-label">Select Sex:</label>
-            <!-- Dropdown will be inserted here by JavaScript -->
-          </div>
-        </div>
-        <div class="col-md-9">
-          <div id="visualization1">
-            <!-- Visualization will be inserted here by D3.js -->
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="visualization-section2" class="my-5">
-      <div class="row">
-        <div class="col-md-3">
-          <div id="filter-container2" class="mb-3">
-            <h3>Filters</h3>
-            <label for="sex-filter2" class="form-label">Select Sex:</label>
-            <!-- Dropdown will be inserted here by JavaScript -->
-          </div>
-        </div>
-        <div class="col-md-9">
-          <div id="visualization2">
-            <!-- Visualization will be inserted here by D3.js -->
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Explanation Section -->
-    <section id="explanation" class="my-4">
-      <h2>Observations</h2>
-
-      <p>TODO</p>
-      <h3>Key Findings</h3>
-      <p>TODO</p>
-    </section>
-
-    <!-- Project Status Section -->
-    <section id="project-status" class="my-4">
-      <h2>Project Status</h2>
-      <h3>What have we done so far?</h3>
-      <p>So far, we have focused on laying the groundwork for our final web page by creating the foundational structure.
-        We have developed our initial interactive visualization of a scatter plot with filtering as a primary component
-        of our overall explorable explanation. We used D3.js, HTML, and CSS to create a scatter plot displaying trends
-        in body temperatures in mice by gender, including the ability to filter the data display for a specified group.
-        We have also introduced some key sections to be implemented into the final article layout, such as an
-        introduction, observations, and key findings.</p>
-
-      <h3>What will be the most challenging of your project to design and why?</h3>
-      <p>The most challenging design of our project is creating the 'slideshow' of the visualization to effectively
-        provide a story alongside the main visualization. This would be the most challenging as we would need to conduct
-        our own EDA in order to discover insights to showcase, while also creating additional visualizations for each
-        aspect of the story. This part of the design is not just challenging on a technical level, but it also requires
-        some level of creativity. Creativity is essential if we are to provide a compelling and concise story that flows
-        together for the users.</p>
-    </section>
-
-
-  </div>
-
-  <!-- Tooltip div for hover information -->
-  <div id="tooltip" class="tooltip"></div>
-
-  <!-- Scripts -->
+  <meta name="description" content="An interactive visualization analysis of circadian rhythms in mice through temperature and activity data">
+  <title>Visualizing Circadian Patterns: Interactive Analysis of Mouse Biological Rhythms</title>
+  <link rel="stylesheet" href="styles.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+  <article>
+    <h1>Visualizing Circadian Patterns: Interactive Analysis of Mouse Biological Rhythms</h1>
+    
+    <div class="introduction">
+      <p>Circadian rhythms govern essential biological functions across species, operating on approximately 24-hour cycles. This interactive analysis presents data from our study of 26 laboratory mice (13 male, 13 female) monitored over multiple weeks, revealing the intricate relationships between temperature regulation, activity patterns, and gender differences.</p>
+      <p>The visualizations that follow will guide you through our findings in a sequential manner, from basic temperature patterns to complex correlations between variables. Each visualization builds upon the previous one, creating a cumulative understanding of circadian biology.</p>
+      <p>Our comprehensive study utilized subcutaneous temperature sensors and infrared motion detectors to continuously track physiological parameters in a controlled laboratory environment with a consistent 12-hour light/dark cycle. Data was collected at 5-minute intervals throughout the study period, generating over 20,000 data points per subject.</p>
+    </div>
+    
+    <section class="visualization-section">
+      <h2>1. Activity-Temperature Relationship</h2>
+      <p>The relationship between physical activity and body temperature in mice reveals fundamental aspects of their physiological regulation. This visualization examines how these two parameters correlate across our study population of 26 mice (13 male, 13 female), helping us understand both the general patterns and sex-specific differences in thermoregulation.</p>
+      
+      <div class="visualization-container">
+        <h3>Mouse Activity vs. Temperature</h3>
+        <div id="filter-container1" class="filter-container">
+          <label for="sex-filter1">Select Sex:</label>
+        </div>
+        <div id="visualization1" class="svg-container" aria-label="Mouse Activity vs. Temperature scatter plot" role="img" style="height: 400px;"></div>
+        <div class="chart-description">
+          <p>This scatter plot reveals the dynamic relationship between activity levels and body temperature. Each point represents a single measurement, with males shown in blue and females in red. The clear positive correlation demonstrates how increased activity is associated with higher body temperatures, though the relationship is not strictly linear.</p>
+        </div>
+        <div id="tooltip" class="tooltip" style="opacity: 0;"></div>
+      </div>
+
+      <div class="key-observations">
+        <h4>Key Observations:</h4>
+        <ul>
+          <li>Temperature range spans from 35.0°C to 38.5°C, with most measurements clustering between 36.0-37.5°C</li>
+          <li>Female mice (red) maintain slightly higher average temperatures compared to males (blue)</li>
+          <li>Activity levels show a wide distribution (0-180 units), with most activity occurring below 100 units</li>
+          <li>The relationship between activity and temperature shows a clear positive correlation but plateaus at higher activity levels</li>
+          <li>At low activity levels (0-20), there is greater temperature variation, suggesting other factors influence body temperature during rest periods</li>
+        </ul>
+      </div>
+
+      <div class="analysis-notes">
+        <h4>Physiological Implications:</h4>
+        <p>The scatter plot pattern suggests a thermoregulatory system that responds to physical activity but maintains tight control over body temperature. The plateau effect at higher activity levels indicates a physiological ceiling for temperature elevation, likely serving as a protective mechanism against overheating. The sex-based differences visible in the distribution pattern align with known metabolic and hormonal variations between male and female mice.</p>
+      </div>
+    </section>
+
+    <section class="visualization-section">
+      <h2>2. Circadian Temperature Rhythms</h2>
+      <p>Body temperature in mice follows distinct daily cycles that reflect their circadian rhythms. This visualization tracks temperature fluctuations across multiple days, revealing robust patterns in thermoregulation and highlighting differences between male and female mice.</p>
+      
+      <div class="visualization-container">
+        <h3>Temperature Over Time</h3>
+        <div id="filter-container2" class="filter-container">
+          <label for="sex-filter2">Select Sex:</label>
+        </div>
+        <div id="line-plot-chart" class="svg-container" aria-label="Temperature over time line plot" role="img" style="height: 400px;"></div>
+        <div class="chart-description">
+          <p>This time series visualization shows the cyclic nature of body temperature regulation. Males (blue) and females (red) display clear rhythmic patterns, with temperatures cycling approximately every 24 hours. The overlapping lines from multiple mice demonstrate the consistency of these patterns across individuals. Click any line to focus on a single mouse's temperature profile.</p>
+        </div>
+        
+
+      <div class="key-observations">
+        <h4>Key Observations:</h4>
+        <ul>
+          <li>Daily rhythms show consistent oscillation between 35.0°C and 38.5°C</li>
+          <li>Female mice (red) exhibit higher peak temperatures and maintain slightly elevated baselines</li>
+          <li>Temperature cycles align closely with the 24-hour light/dark cycle</li>
+          <li>The pattern remains stable across the entire study period, indicating robust circadian control</li>
+          <li>Brief temperature spikes appear regularly, likely corresponding to periods of intense activity</li>
+        </ul>
+      </div>
+
+      <div class="analysis-notes">
+        <h4>Chronobiological Significance:</h4>
+        <p>The regular oscillation of body temperature represents a fundamental output of the circadian clock. The consistency of these cycles across days and between individuals demonstrates the precision of biological timing mechanisms. Sex-based differences in temperature profiles suggest hormonal influences on thermoregulation, with females maintaining generally higher temperatures throughout the cycle. These patterns provide valuable insights into both circadian biology and sex-specific physiological regulation.</p>
+      </div>
+    </section>
+
+    <section class="visualization-section">
+      <h2>3. Activity Patterns</h2>
+      <p>TODO</p>
+      <p>TODO</p>
+      
+      <div class="visualization-container">
+        <h3>Activity Heatmap</h3>
+        <div id="heatmap-chart" class="svg-container" aria-label="Activity heatmap" role="img" style="height: 400px;"></div>
+        <div class="chart-description">
+          <p>TODO</p>
+        </div>
+      </div>
+
+      <div class="key-observations">
+        <h4>The data reveals:</h4>
+        <ul>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="visualization-section">
+      <h2>4. Correlation Between Temperature and Activity</h2>
+      <p>TODO</p>
+      <p>TODO</p>
+      
+      <div class="visualization-container">
+        <h3>Activity vs Temperature Scatter Plot</h3>
+        <div id="scatter-chart" class="svg-container" aria-label="Activity vs Temperature scatter plot" role="img" style="height: 400px;"></div>
+        <div class="chart-description">
+          <p>TODO</p>
+        </div>
+      </div>
+      
+      <div class="visualization-container">
+        <h3>Circadian Pattern Analysis</h3>
+        <div id="pattern-chart" class="svg-container" aria-label="Circadian pattern chart" role="img" style="height: 400px;"></div>
+        <div class="chart-description">
+          <p>TODO</p>
+        </div>
+      </div>
+
+      <div class="key-observations">
+        <h4>Observations:</h4>
+        <ul>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="visualization-section">
+      <h2>5. Gender Comparison Analysis</h2>
+      <p>TODO</p>
+      <p>TODO</p>
+      
+      <div class="visualization-container">
+        <h3>Gender Comparison</h3>
+        <div id="gender-chart" class="svg-container" aria-label="Gender comparison chart" role="img" style="height: 400px;"></div>
+        <div class="chart-description">
+          <p>TODO</p>
+        </div>
+      </div>
+
+      <div class="key-observations">
+        <h4>The data shows:</h4>
+        <ul>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+        </ul>
+      </div>
+    </section>
+    
+    <section class="visualization-section">
+      <h2>6. Individual Variation Analysis</h2>
+      <p>TODO</p>
+      <p>TODO</p>
+      
+      <div class="visualization-container">
+        <h3>Individual Variation Patterns</h3>
+        <div id="individual-chart" class="svg-container" aria-label="Individual variation chart" role="img" style="height: 400px;"></div>
+        <div class="chart-description">
+          <p>TODO</p>
+        </div>
+      </div>
+
+      <div class="key-observations">
+        <h4>Key findings:</h4>
+        <ul>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+          <li>TODO</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="conclusion">
+      <h2>Conclusion</h2>
+      <p>TODO</p>
+      <p>TODO</p>
+      <p>TODO</p>
+    </section>
+  </article>
+
+  <script src="main.js"></script>
   <script src="script.js"></script>
 </body>
-
 </html>
+

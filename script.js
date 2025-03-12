@@ -6,8 +6,8 @@ let tooltip;
 document.addEventListener('DOMContentLoaded', async function () {
   // Show loading indicator
   d3.select("#visualization1").html('<div class="loading">Loading data, please wait...</div>');
-  d3.select("#visualization2").html('<div class="loading">Loading data, please wait...</div>');
-
+  d3.select("#line-plot-chart").html('<div class="loading">Loading data, please wait...</div>');
+  
   // Initialize tooltip
   tooltip = d3.select("#tooltip");
 
@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   } catch (error) {
     console.error("Error loading or processing data:", error);
     d3.select("#visualization1").html('<div class="alert alert-danger">Error loading data. Please try again later.</div>');
+    d3.select("#line-plot-chart").html('<div class="alert alert-danger">Error loading data. Please try again later.</div>');
   }
 });
 
@@ -312,10 +313,10 @@ function createLinePlot(data, filteredSex = "all") {
   const height = 500 - margin.top - margin.bottom;
 
   // Clear previous SVG
-  d3.select("#visualization2").html("");
+  d3.select("#line-plot-chart").html("");
 
   // Create SVG container with responsive design
-  const svg = d3.select("#visualization2")
+  const svg = d3.select("#line-plot-chart")
     .append("svg")
     .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
     .attr("preserveAspectRatio", "xMidYMid meet")

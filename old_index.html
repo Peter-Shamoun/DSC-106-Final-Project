@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mouse Activity and Temperature Visualization</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="styles.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="my-4">
+      <h1 class="text-center">Mouse Activity and Temperature Visualization</h1>
+      <p class="lead text-center">Exploring patterns between activity levels and core body temperature in male and
+        female mice</p>
+    </header>
+
+    <!-- Introduction Section -->
+    <section id="introduction" class="my-4">
+      <h2>Introduction</h2>
+      <p>TODO</p>
+    </section>
+
+    <!-- Visualization Section -->
+    <section id="visualization-section1" class="my-5">
+      <div class="row">
+        <div class="col-md-3">
+          <div id="filter-container1" class="mb-3">
+            <h3>Filters</h3>
+            <label for="sex-filter1" class="form-label">Select Sex:</label>
+            <!-- Dropdown will be inserted here by JavaScript -->
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div id="visualization1">
+            <!-- Visualization will be inserted here by D3.js -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="visualization-section2" class="my-5">
+      <div class="row">
+        <div class="col-md-3">
+          <div id="filter-container2" class="mb-3">
+            <h3>Filters</h3>
+            <label for="sex-filter2" class="form-label">Select Sex:</label>
+            <!-- Dropdown will be inserted here by JavaScript -->
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div id="visualization2">
+            <!-- Visualization will be inserted here by D3.js -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Explanation Section -->
+    <section id="explanation" class="my-4">
+      <h2>Observations</h2>
+
+      <p>TODO</p>
+      <h3>Key Findings</h3>
+      <p>TODO</p>
+    </section>
+
+    <!-- Project Status Section -->
+    <section id="project-status" class="my-4">
+      <h2>Project Status</h2>
+      <h3>What have we done so far?</h3>
+      <p>So far, we have focused on laying the groundwork for our final web page by creating the foundational structure.
+        We have developed our initial interactive visualization of a scatter plot with filtering as a primary component
+        of our overall explorable explanation. We used D3.js, HTML, and CSS to create a scatter plot displaying trends
+        in body temperatures in mice by gender, including the ability to filter the data display for a specified group.
+        We have also introduced some key sections to be implemented into the final article layout, such as an
+        introduction, observations, and key findings.</p>
+
+      <h3>What will be the most challenging of your project to design and why?</h3>
+      <p>The most challenging design of our project is creating the 'slideshow' of the visualization to effectively
+        provide a story alongside the main visualization. This would be the most challenging as we would need to conduct
+        our own EDA in order to discover insights to showcase, while also creating additional visualizations for each
+        aspect of the story. This part of the design is not just challenging on a technical level, but it also requires
+        some level of creativity. Creativity is essential if we are to provide a compelling and concise story that flows
+        together for the users.</p>
+    </section>
+
+
+  </div>
+
+  <!-- Tooltip div for hover information -->
+  <div id="tooltip" class="tooltip"></div>
+
+  <!-- Scripts -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
