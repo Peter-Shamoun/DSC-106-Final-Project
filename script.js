@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   // Show loading indicator
   d3.select("#visualization1").html('<div class="loading">Loading data, please wait...</div>');
   d3.select("#line-plot-chart").html('<div class="loading">Loading data, please wait...</div>');
+  d3.select("#heatmap-chart").html('<div class="loading">Loading data, please wait...</div>');
   
   // Initialize tooltip
   tooltip = d3.select("#tooltip");
@@ -20,14 +21,23 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Set up filters
     setupFiltersScatterPlot();
     setupFiltersTemperatureLinePlot();
+    setupHeatmapFilters();
 
     // Create initial visualization
     createScatterPlot(data, "all");
     createTemperatureLinePlot(data, "all");
+    createActivityHeatmap(data, "all", "all");
+    
+    // Ensure estrus filter is properly disabled initially
+    const sexFilter = d3.select("#sex-filter3").node();
+    if (sexFilter && sexFilter.value !== "female") {
+      d3.select("#estrus-filter3").property("disabled", true);
+    }
   } catch (error) {
     console.error("Error loading or processing data:", error);
     d3.select("#visualization1").html('<div class="alert alert-danger">Error loading data. Please try again later.</div>');
     d3.select("#line-plot-chart").html('<div class="alert alert-danger">Error loading data. Please try again later.</div>');
+    d3.select("#heatmap-chart").html('<div class="alert alert-danger">Error loading data. Please try again later.</div>');
   }
 });
 
@@ -272,8 +282,10 @@ function createScatterPlot(data, filteredSex = "all") {
 
 // Error handling function
 function handleError(message) {
-  console.error(message);
-  d3.select("#visualization1").html(`<div class="alert alert-danger">${message}</div>`);
+  console.error('Error:', message);
+  d3.select("#heatmap-chart").html(`<p class="error-message">Error: ${message}</p>`);
+  d3.select("#line-plot-chart").html(`<p class="error-message">Error: ${message}</p>`);
+  d3.select("#visualization1").html(`<p class="error-message">Error: ${message}</p>`);
 }
 
 // TODO: Fix filters, or maybe just add an instruction box on how to operate graph
@@ -719,3 +731,556 @@ d3.select('#activity-toggle').on('click', function() {
   setupFiltersActivityLinePlot();
   createActivityLinePlot(globalData, "all");
 });
+
+// Function to create circular heatmap visualization
+function createActivityHeatmap(data, filteredSex = "all", filteredEstrus = "all") {
+  // Filter data based on sex selection
+  let filteredData = data;
+  if (filteredSex !== "all") {
+    filteredData = data.filter(d => d.sex === filteredSex);
+  }
+  
+  // Further filter based on estrus status (only if female is selected)
+  if (filteredSex === "female" && filteredEstrus !== "all") {
+    const isEstrus = filteredEstrus === "estrus";
+    filteredData = filteredData.filter(d => d.estrusStatus === isEstrus);
+  }
+
+  // Process data for the heatmap - group by hour of day and day
+  const hourlyActivity = processDataForHeatmap(filteredData);
+  
+  // Create a map of which days are estrus days (for filtering visualization)
+  const estrusMap = new Map();
+  if (filteredSex === "female" && filteredEstrus !== "all") {
+    const isEstrus = filteredEstrus === "estrus";
+    for (let day = 1; day <= 14; day++) {
+      // Day is estrus if it's (day-2) % 4 === 0
+      const dayIsEstrus = ((day - 2) % 4 === 0);
+      // Day should be shown if its estrus status matches the filter
+      estrusMap.set(day, dayIsEstrus === isEstrus);
+    }
+  } else {
+    // If no estrus filtering, all days are shown
+    for (let day = 1; day <= 14; day++) {
+      estrusMap.set(day, true);
+    }
+  }
+  
+  // Set up dimensions and margins - INCREASED TOP MARGIN for better text spacing
+  const margin = { top: 80, right: 50, bottom: 50, left: 50 };
+  const width = 700 - margin.left - margin.right;
+  const height = 700 - margin.top - margin.bottom;
+  const innerRadius = 100;
+  const outerRadius = Math.min(width, height) / 2 - 40; // Reduced outer radius slightly
+  
+  // Clear previous SVG
+  d3.select("#heatmap-chart").html("");
+  
+  // Create SVG container with responsive design
+  const svg = d3.select("#heatmap-chart")
+    .append("svg")
+    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .append("g")
+    .attr("transform", `translate(${(width + margin.left + margin.right) / 2},${(height + margin.top + margin.bottom) / 2})`);
+  
+  // Add arrowhead marker definition
+  svg.append("defs").append("marker")
+    .attr("id", "arrowhead")
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 8)
+    .attr("refY", 0)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M0,-5L10,0L0,5")
+    .attr("fill", "#333");
+  
+  // Create scales
+  // 24 hours in a day
+  const hours = Array.from({length: 24}, (_, i) => i);
+  
+  // Days - we'll use first 14 days for visualization
+  const days = Array.from({length: 14}, (_, i) => i + 1);
+  
+  // Angle scale for hours (around the circle)
+  const angleScale = d3.scaleLinear()
+    .domain([0, 24])
+    .range([0, 2 * Math.PI]);
+  
+  // Radius scale for days (from center outward)
+  const radiusScale = d3.scaleLinear()
+    .domain([1, days.length + 1])
+    .range([innerRadius, outerRadius]);
+  
+  // Color scale for activity levels
+  const colorScale = d3.scaleSequential()
+    .domain([0, d3.max(hourlyActivity, d => d.avgActivity) * 0.8])
+    .interpolator(d3.interpolateYlOrRd);
+
+  // Reference to the clock hand that we'll update on hover
+  const clockHand = svg.append("line")
+    .attr("id", "clock-hand")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", 0)
+    .attr("y2", -innerRadius + 20)
+    .attr("stroke", "#333")
+    .attr("stroke-width", 2)
+    .attr("marker-end", "url(#arrowhead)");
+  
+  // Add hour sectors (radial divisions)
+  hours.forEach(hour => {
+    const angle = angleScale(hour);
+    const nextAngle = angleScale(hour + 1);
+    
+    days.forEach(day => {
+      const innerR = radiusScale(day);
+      const outerR = radiusScale(day + 1);
+      
+      // Find activity data for this hour and day
+      const activityData = hourlyActivity.find(d => d.hour === hour && d.day === day);
+      const activityValue = activityData ? activityData.avgActivity : 0;
+      
+      // Create a path for the sector
+      const arc = d3.arc()
+        .innerRadius(innerR)
+        .outerRadius(outerR)
+        .startAngle(angle)
+        .endAngle(nextAngle);
+      
+      // Check if this day should be shown based on estrus filtering
+      const isDayShown = estrusMap.get(day);
+      
+      svg.append("path")
+        .attr("d", arc)
+        .attr("fill", isDayShown ? colorScale(activityValue) : "#ffffff") // Use white for filtered out days
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 1)
+        .attr("class", "hour-sector")
+        .attr("data-hour", hour) // Store hour for easy reference
+        .attr("data-day", day)   // Store day for easy reference
+        .attr("data-shown", isDayShown) // Store whether day is shown
+        .on("mouseover", function(event) {
+          // Only show tooltip and update clock hand if the day is shown
+          if (isDayShown) {
+            // Show tooltip
+            tooltip.transition()
+              .duration(200)
+              .style("opacity", .9);
+            
+            const periodOfDay = hour < 12 ? 
+              (hour < 6 ? "Early Morning" : "Morning") : 
+              (hour < 18 ? "Afternoon" : "Evening");
+            
+            const lightStatus = (hour >= 6 && hour < 18) ? "Light On" : "Light Off";
+            
+            const estrusStatus = ((day - 2) % 4 === 0) ? "Estrus" : "Non-Estrus";
+            
+            tooltip.html(`
+              <strong>Day:</strong> ${day}<br>
+              <strong>Hour:</strong> ${hour}:00<br>
+              <strong>Period:</strong> ${periodOfDay}<br>
+              <strong>Light:</strong> ${lightStatus}<br>
+              ${filteredSex === "female" ? `<strong>Estrus Status:</strong> ${estrusStatus}<br>` : ''}
+              <strong>Avg Activity:</strong> ${activityValue.toFixed(2)}<br>
+              <strong>Sex:</strong> ${filteredSex === "all" ? "All Mice" : filteredSex.charAt(0).toUpperCase() + filteredSex.slice(1) + "s"}
+            `)
+              .style("left", (event.pageX + 10) + "px")
+              .style("top", (event.pageY - 28) + "px");
+            
+            // Update clock hand angle to point to this hour
+            // Adjust to start at 12 o'clock position
+            const hourAngle = angleScale(hour) - Math.PI/2;
+            
+            // Calculate end point of the clock hand
+            const handLength = innerRadius - 20;
+            const endX = handLength * Math.cos(hourAngle);
+            const endY = handLength * Math.sin(hourAngle);
+            
+            // Animate the clock hand to point to this hour
+            clockHand
+              .transition()
+              .duration(200)
+              .attr("x2", endX)
+              .attr("y2", endY);
+          }
+        })
+        .on("mouseout", function() {
+          // We don't hide the tooltip here anymore - it's handled by the overlay
+        });
+    });
+  });
+  
+  // Add period dividers (for Early Morning, Morning, Afternoon, Evening)
+  const periodHours = [0, 6, 12, 18]; // Hours that divide the periods
+  const periodNames = ["Early Morning", "Morning", "Afternoon", "Evening"];
+  
+  // Add divider lines
+  periodHours.forEach((hour, index) => {
+    const angle = angleScale(hour) - Math.PI/2; // Adjust to start at 12 o'clock position
+    const startX = innerRadius * Math.cos(angle);
+    const startY = innerRadius * Math.sin(angle);
+    const endX = outerRadius * Math.cos(angle);
+    const endY = outerRadius * Math.sin(angle);
+    
+    // Add divider line
+    svg.append("line")
+      .attr("x1", startX)
+      .attr("y1", startY)
+      .attr("x2", endX)
+      .attr("y2", endY)
+      .attr("stroke", "#555")
+      .attr("stroke-width", 1.5)
+      .attr("stroke-dasharray", "4,4")
+      .attr("class", "period-divider");
+    
+    // Calculate position for period label
+    const midRadius = innerRadius - 30; // Position inside the inner circle
+    const labelAngle = angleScale(hour + 3) - Math.PI/2; // Center of each period (hour + 3)
+    const labelX = midRadius * Math.cos(labelAngle);
+    const labelY = midRadius * Math.sin(labelAngle);
+    
+    // Add period label
+    svg.append("text")
+      .attr("x", labelX)
+      .attr("y", labelY)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("font-size", "10px")
+      .attr("fill", "#555")
+      .attr("class", "period-label")
+      .text(periodNames[index]);
+  });
+  
+  // Add clock hour labels (outside the circle)
+  hours.forEach(hour => {
+    const angle = angleScale(hour) - Math.PI / 2; // Adjust to start at 12 o'clock position
+    const labelRadius = outerRadius + 20;
+    const x = labelRadius * Math.cos(angle);
+    const y = labelRadius * Math.sin(angle);
+    
+    svg.append("text")
+      .attr("x", x)
+      .attr("y", y)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("font-size", "12px")
+      .text(hour === 0 ? "12am" : hour === 12 ? "12pm" : hour > 12 ? `${hour-12}pm` : `${hour}am`);
+  });
+  
+  // Add color legend
+  const legendWidth = 200;
+  const legendHeight = 15;
+  const legendX = -legendWidth / 2;
+  const legendY = outerRadius + 60; // Moved down further
+  
+  const legendScale = d3.scaleLinear()
+    .domain([0, d3.max(hourlyActivity, d => d.avgActivity) * 0.8])
+    .range([0, legendWidth]);
+  
+  const defs = svg.append("defs");
+  
+  const legendGradient = defs.append("linearGradient")
+    .attr("id", "legend-gradient")
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "100%")
+    .attr("y2", "0%");
+  
+  const gradientStops = [0, 0.2, 0.4, 0.6, 0.8, 1.0];
+  
+  gradientStops.forEach(stop => {
+    legendGradient.append("stop")
+      .attr("offset", `${stop * 100}%`)
+      .attr("stop-color", colorScale(stop * d3.max(hourlyActivity, d => d.avgActivity) * 0.8));
+  });
+  
+  svg.append("rect")
+    .attr("x", legendX)
+    .attr("y", legendY)
+    .attr("width", legendWidth)
+    .attr("height", legendHeight)
+    .style("fill", "url(#legend-gradient)");
+  
+  svg.append("text")
+    .attr("x", legendX)
+    .attr("y", legendY - 5)
+    .attr("text-anchor", "start")
+    .attr("font-size", "10px")
+    .text("Low Activity");
+  
+  svg.append("text")
+    .attr("x", legendX + legendWidth)
+    .attr("y", legendY - 5)
+    .attr("text-anchor", "end")
+    .attr("font-size", "10px")
+    .text("High Activity");
+  
+  // Update title to include estrus status if filtered
+  let titleText = `24-Hour Activity Patterns`;
+  
+  if (filteredSex !== "all") {
+    titleText += ` (${filteredSex.charAt(0).toUpperCase() + filteredSex.slice(1)}s)`;
+  }
+  
+  if (filteredEstrus !== "all") {
+    titleText += ` - ${filteredEstrus.charAt(0).toUpperCase() + filteredEstrus.slice(1)} Days`;
+  }
+  
+  // Add title - moved up further from the visualization
+  svg.append("text")
+    .attr("x", 0)
+    .attr("y", -outerRadius - 50) // Increased distance
+    .attr("text-anchor", "middle")
+    .attr("font-size", "16px")
+    .attr("font-weight", "bold")
+    .text(titleText);
+  
+  // Add explanation text - positioned properly below the title with space
+  svg.append("text")
+    .attr("x", 0)
+    .attr("y", -outerRadius - 30) // Increased distance from the title
+    .attr("text-anchor", "middle")
+    .attr("font-size", "12px")
+    .text("Hours of day are shown around the circle, days extend outward from center");
+  
+  // Initialize the clock hand to point to 12 o'clock
+  const defaultHour = 0; // 12 AM
+  const defaultAngle = angleScale(defaultHour) - Math.PI/2;
+  const handLength = innerRadius - 20;
+  const defaultEndX = handLength * Math.cos(defaultAngle);
+  const defaultEndY = handLength * Math.sin(defaultAngle);
+  
+  clockHand
+    .attr("x2", defaultEndX)
+    .attr("y2", defaultEndY);
+    
+  // Circle overlay to capture mouse movement for the whole clock
+  svg.append("circle")
+    .attr("cx", 0)
+    .attr("cy", 0)
+    .attr("r", outerRadius)
+    .attr("fill", "transparent")
+    .style("pointer-events", "all")
+    .on("mousemove", function(event) {
+      // Get mouse coordinates relative to the center of the circle
+      const [mouseX, mouseY] = d3.pointer(event, this);
+      
+      // Calculate angle from center to mouse position
+      let angle = Math.atan2(mouseY, mouseX);
+      
+      // Convert to positive angle in radians (0 to 2π)
+      if (angle < 0) angle += 2 * Math.PI;
+      
+      // Adjust to have 0 at the top (12 o'clock position)
+      angle = (angle + Math.PI/2) % (2 * Math.PI);
+      
+      // Convert angle to hour (0-23)
+      const hour = Math.floor((angle / (2 * Math.PI)) * 24);
+      
+      // Calculate radius from center to determine which day
+      const radius = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+      
+      // Determine which day (ring) the mouse is over
+      let day = 1;
+      for (let i = 1; i <= days.length; i++) {
+        if (radius >= radiusScale(i) && radius < radiusScale(i+1)) {
+          day = i;
+          break;
+        }
+      }
+      
+      // Check if this day should be shown based on estrus filtering
+      const isDayShown = estrusMap.get(day);
+      
+      // Only update tooltip and highlight if the day is shown
+      if (isDayShown) {
+        // Find activity data for this hour and day
+        const activityData = hourlyActivity.find(d => d.hour === hour && d.day === day);
+        const activityValue = activityData ? activityData.avgActivity : 0;
+        
+        // Calculate end point for the clock hand
+        const endX = handLength * Math.cos(angle - Math.PI/2);
+        const endY = handLength * Math.sin(angle - Math.PI/2);
+        
+        // Update the clock hand
+        clockHand
+          .attr("x2", endX)
+          .attr("y2", endY);
+        
+        // Show tooltip with proper information
+        tooltip.transition()
+          .duration(200)
+          .style("opacity", .9);
+        
+        const periodOfDay = hour < 12 ? 
+          (hour < 6 ? "Early Morning" : "Morning") : 
+          (hour < 18 ? "Afternoon" : "Evening");
+        
+        const lightStatus = (hour >= 6 && hour < 18) ? "Light On" : "Light Off";
+        
+        const estrusStatus = ((day - 2) % 4 === 0) ? "Estrus" : "Non-Estrus";
+        
+        tooltip.html(`
+          <strong>Day:</strong> ${day}<br>
+          <strong>Hour:</strong> ${hour}:00<br>
+          <strong>Period:</strong> ${periodOfDay}<br>
+          <strong>Light:</strong> ${lightStatus}<br>
+          ${filteredSex === "female" ? `<strong>Estrus Status:</strong> ${estrusStatus}<br>` : ''}
+          <strong>Avg Activity:</strong> ${activityValue.toFixed(2)}<br>
+          <strong>Sex:</strong> ${filteredSex === "all" ? "All Mice" : filteredSex.charAt(0).toUpperCase() + filteredSex.slice(1) + "s"}
+        `)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 28) + "px");
+        
+        // Highlight the sector being pointed to
+        svg.selectAll(".hour-sector")
+          .attr("opacity", function() {
+            return d3.select(this).attr("data-hour") == hour && 
+                  d3.select(this).attr("data-shown") === "true" ? 1 : 0.7;
+          })
+          .attr("stroke-width", function() {
+            return d3.select(this).attr("data-hour") == hour && 
+                  d3.select(this).attr("data-shown") === "true" ? 2 : 1;
+          });
+      }
+    })
+    .on("mouseout", function() {
+      // Hide tooltip
+      tooltip.transition()
+        .duration(500)
+        .style("opacity", 0);
+      
+      // Reset all sectors to normal appearance
+      svg.selectAll(".hour-sector")
+        .attr("opacity", 1)
+        .attr("stroke-width", 1);
+      
+      // Reset clock hand to 12 o'clock position
+      clockHand
+        .transition()
+        .duration(500)
+        .attr("x2", defaultEndX)
+        .attr("y2", defaultEndY);
+    });
+}
+
+// Process data for the heatmap
+function processDataForHeatmap(data) {
+  // Group data by day and hour
+  const hourlyData = [];
+  
+  // Iterate through days 1-14
+  for (let day = 1; day <= 14; day++) {
+    // Iterate through hours 0-23
+    for (let hour = 0; hour < 24; hour++) {
+      // Filter data for this day and hour range
+      const startMinute = (day - 1) * 1440 + hour * 60;
+      const endMinute = startMinute + 60;
+      
+      const hourData = data.filter(d => 
+        d.minute >= startMinute && d.minute < endMinute
+      );
+      
+      // Calculate average activity for this hour
+      const avgActivity = hourData.length > 0 
+        ? d3.mean(hourData, d => d.activity)
+        : 0;
+      
+      hourlyData.push({
+        day: day,
+        hour: hour,
+        avgActivity: avgActivity
+      });
+    }
+  }
+  
+  return hourlyData;
+}
+
+// Add filter setup for the heatmap
+function setupHeatmapFilters() {
+  // Clear the filter container
+  d3.select("#filter-container3").html("");
+  
+  // Create a div for sex filter
+  const sexFilterDiv = d3.select("#filter-container3")
+    .append("div")
+    .attr("class", "filter-item")
+    .style("margin-right", "20px")
+    .style("display", "inline-block");
+  
+  // Add label for sex filter
+  sexFilterDiv.append("label")
+    .attr("for", "sex-filter3")
+    .style("margin-right", "5px")
+    .text("Select Sex:");
+  
+  // Create dropdown for sex filter
+  const sexDropdown = sexFilterDiv
+    .append("select")
+    .attr("id", "sex-filter3")
+    .attr("class", "form-select")
+    .on("change", function() {
+      const selectedSex = this.value;
+      // Reset estrus filter to "all" when sex is not "female"
+      const estrusDropdown = d3.select("#estrus-filter3");
+      if (selectedSex !== "female") {
+        estrusDropdown.property("value", "all");
+        estrusDropdown.property("disabled", true);
+      } else {
+        estrusDropdown.property("disabled", false);
+      }
+      
+      const selectedEstrus = selectedSex === "female" ? estrusDropdown.node().value : "all";
+      createActivityHeatmap(globalData, selectedSex, selectedEstrus);
+    });
+  
+  // Add options to sex dropdown
+  sexDropdown.selectAll("option")
+    .data(["all", "male", "female"])
+    .enter()
+    .append("option")
+    .attr("value", d => d)
+    .text(d => d === "all" ? "All Mice" : d.charAt(0).toUpperCase() + d.slice(1) + "s");
+  
+  // Create a div for estrus filter
+  const estrusFilterDiv = d3.select("#filter-container3")
+    .append("div")
+    .attr("class", "filter-item")
+    .style("display", "inline-block");
+  
+  // Add label for estrus filter
+  estrusFilterDiv.append("label")
+    .attr("for", "estrus-filter3")
+    .style("margin-right", "5px")
+    .text("Estrus Status (Female Only):");
+  
+  // Create dropdown for estrus filter
+  const estrusDropdown = estrusFilterDiv
+    .append("select")
+    .attr("id", "estrus-filter3")
+    .attr("class", "form-select")
+    .property("disabled", true) // Initially disabled
+    .on("change", function() {
+      const selectedEstrus = this.value;
+      const selectedSex = d3.select("#sex-filter3").node().value;
+      createActivityHeatmap(globalData, selectedSex, selectedEstrus);
+    });
+  
+  // Add options to estrus dropdown
+  estrusDropdown.selectAll("option")
+    .data(["all", "estrus", "non-estrus"])
+    .enter()
+    .append("option")
+    .attr("value", d => d)
+    .text(d => {
+      if (d === "all") return "All Days";
+      if (d === "estrus") return "Estrus Days";
+      if (d === "non-estrus") return "Non-Estrus Days";
+    });
+}

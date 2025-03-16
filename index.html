@@ -199,25 +199,28 @@
 
     <section class="visualization-section">
       <h2>3. Activity Patterns</h2>
-      <p>TODO</p>
-      <p>TODO</p>
+      <p>Mice exhibit distinct daily activity patterns that reflect their circadian rhythms and behavioral adaptations. This innovative circular visualization provides a unique perspective on how activity levels fluctuate throughout the 24-hour cycle across multiple days.</p>
+      <p>By arranging time in a clock-like circular format, we can more intuitively see patterns aligned with the natural day-night cycle, revealing when mice are most active and how these patterns evolve over time.</p>
       
       <div class="visualization-container">
         <h3>Activity Heatmap</h3>
-        <div id="heatmap-chart" class="svg-container" aria-label="Activity heatmap" role="img" style="height: 400px;"></div>
+        <div id="filter-container3" class="filter-container">
+          <!-- Filter will be dynamically added by JavaScript -->
+        </div>
+        <div id="heatmap-chart" class="svg-container" aria-label="Activity heatmap" role="img" style="height: 600px;"></div>
         <div class="chart-description">
-          <p>TODO</p>
+          <p>This circular heatmap displays activity patterns throughout the day, with time shown around the clock face (hours) and consecutive days extending outward from the center as rings. Brighter colors (yellows to reds) indicate higher activity levels. The visualization reveals not only when mice are most active during the day but also how these patterns change over the course of multiple days. You can hover over any sector to see detailed information for that specific hour and day.</p>
         </div>
       </div>
 
       <div class="key-observations">
         <h4>The data reveals:</h4>
         <ul>
-          <li>TODO</li>
-          <li>TODO</li>
-          <li>TODO</li>
-          <li>TODO</li>
-          <li>TODO</li>
+          <li>Peak activity occurs primarily during the Early Morning to Morning phase, reflecting the nocturnal nature of mice, sleeping through the afternoon.</li>
+          <li>Activity sharply increases at the Evening-to-Early Morning transition (1am), reflecting the mice waking up and becoming active.</li>
+          <li>Female mice generally exhibit higher activity levels during peak periods compared to males</li>
+          <li>Males have more spread out activity levels, with them showing very low activity levels in the evening.</li>
+          <li>Female mice show distinct activity patterns during estrus cycles, with increased activity during estrus days compared to non-estrus days</li>
         </ul>
       </div>
     </section>
