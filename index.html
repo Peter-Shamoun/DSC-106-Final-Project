@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="An interactive visualization analysis of circadian rhythms in mice through temperature and activity data">
+  <meta name="description"
+    content="An interactive visualization analysis of circadian rhythms in mice through temperature and activity data">
   <title>Visualizing Circadian Patterns: Interactive Analysis of Mouse Biological Rhythms</title>
   <!-- Base styles that will work even if external CSS fails -->
   <style>
@@ -84,7 +86,7 @@
       padding: 10px;
       pointer-events: none;
       font-size: 14px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .key-observations {
@@ -148,10 +150,11 @@
   <link rel="stylesheet" href="styles.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
+
 <body>
   <article>
     <h1>Visualizing Circadian Patterns: Interactive Analysis of Mouse Biological Rhythms</h1>
-    
+
     <div class="introduction">
       <p>Circadian rhythms govern essential biological functions across species, operating on approximately 24-hour cycles. This interactive analysis presents data from our study of 26 laboratory mice (13 male, 13 female) monitored over multiple weeks, revealing relationships between temperature regulation, activity patterns, and gender differences.</p>
       <p>Through the visualizations that follow, we'll explore a surprising discovery about sex-based differences in activity patterns that challenges conventional scientific expectations.</p>
@@ -201,7 +204,8 @@
         <div id="filter-container1" class="filter-container">
           <label for="sex-filter1">Select Sex:</label>
         </div>
-        <div id="visualization1" class="svg-container" aria-label="Mouse Activity vs. Temperature scatter plot" role="img" style="height: 400px;"></div>
+        <div id="visualization1" class="svg-container" aria-label="Mouse Activity vs. Temperature scatter plot"
+          role="img" style="height: 400px;"></div>
         <div class="chart-description">
           <p>This scatter plot reveals the relationship between activity levels and body temperature. Each point represents a single measurement, with males (blue) and females (red). <span class="highlight-text">Contrary to our expectations, male mice (blue) show greater dispersion in both axes</span>, indicating more variability in their activity-temperature relationship than females. This is our first hint that our assumptions about female mice having more variable patterns might be incorrect.</p>
         </div>
@@ -230,13 +234,14 @@
       <div class="visualization-container">
         <h3>Temperature/Activity Patterns Over Time</h3>
         <div id="button-container">
-            <button id="temp-toggle">View Temperature</button>
-            <button id="activity-toggle">View Activity</button>
+          <button id="temp-toggle">View Temperature</button>
+          <button id="activity-toggle">View Activity</button>
         </div>
         <div id="filter-container2" class="filter-container">
           <label for="sex-filter2">Select Sex:</label>
         </div>
-        <div id="line-plot-chart" class="svg-container" aria-label="Temperature over time line plot" role="img" style="height: 400px;"></div>
+        <div id="line-plot-chart" class="svg-container" aria-label="Temperature over time line plot" role="img"
+          style="height: 400px;"></div>
         <div class="chart-description">
           <p>This time series visualization shows how temperature and activity fluctuate throughout each day. Males (blue) and females (red) both display clear rhythmic patterns, but <span class="highlight-text">the male lines show greater variation in amplitude</span>, especially when viewing the activity data. Click any line to focus on a single mouse's profile and see how individual animals may differ from others of the same sex.</p>
         </div>
@@ -289,7 +294,9 @@
             </select>
           </div>
         </div>
-        <div id="gender-comparison-chart" class="svg-container" aria-label="Gender comparison chart showing average temperature or activity by sex with optional individual mouse data" role="img"></div>
+        <div id="gender-comparison-chart" class="svg-container"
+          aria-label="Gender comparison chart showing average temperature or activity by sex with optional individual mouse data"
+          role="img"></div>
         <div class="chart-description">
           <p>This line chart displays average values for male (blue) and female (red) mice over time, with shaded areas representing standard deviation. When you select an individual mouse, its data appears as a dotted line, allowing you to directly compare how it deviates from its gender's average. <span class="highlight-text">The significantly wider blue shaded area confirms greater male variability</span>, especially when examining activity data.</p>
         </div>
@@ -329,5 +336,5 @@
   <script src="main.js"></script>
   <script src="script.js"></script>
 </body>
-</html>
 
+</html>
