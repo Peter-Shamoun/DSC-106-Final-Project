@@ -50,11 +50,74 @@
       color: var(--color-text);
     }
 
+    .authors {
+      width: 100%;
+      text-align: center;
+      font-size: 1.2em;
+      font-weight: normal;
+      margin: 0.5em auto 3em;
+      color: #4a6fa5;
+      position: relative;
+      padding-bottom: 2.5em;
+      display: block;
+    }
+    
+    .authors p {
+      margin: 0 auto;
+      padding: 0;
+      line-height: 1.4;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .authors::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 1px;
+      background: #ddd;
+    }
+    
+    .author {
+      color: var(--color-primary);
+      font-weight: 500;
+      display: inline-block;
+      position: relative;
+    }
+    
+    .author::after {
+      content: '•';
+      display: inline-block;
+      margin: 0 0.4em;
+      color: var(--color-text-light);
+      font-weight: normal;
+    }
+    
+    .author:last-child::after {
+      content: '';
+      margin: 0;
+    }
+
     .introduction {
       font-size: 1.2em;
       line-height: 1.6;
       margin: 2em 0 4em;
       color: var(--color-text);
+      width: 100%;
+    }
+    
+    .introduction p {
+      margin-bottom: 1.5em;
+      text-align: center;
+      padding: 0;
+      max-width: 100%;
+    }
+    
+    .introduction p:last-child {
+      margin-bottom: 0;
     }
 
     .visualization-section {
@@ -287,6 +350,21 @@
       .conclusion ul {
         padding-left: 1em;
       }
+      
+      .authors {
+        font-size: 0.95em;
+        margin: 0.3em 0 2em;
+        padding-bottom: 1.2em;
+      }
+      
+      .authors::after {
+        width: 80px;
+        height: 1px;
+      }
+      
+      .author {
+        display: inline-block;
+      }
     }
   </style>
   <!-- External CSS file with both relative and absolute paths for robustness -->
@@ -299,9 +377,14 @@
   <article>
     <h1>Visualizing Circadian Patterns: Interactive Analysis of Mouse Biological Rhythms</h1>
 
-    <div class="introduction">
-      <p>When science surprises us, it often reveals our hidden assumptions. In biology, conventional wisdom has long held that female mammals, with their complex hormonal cycles, exhibit more variable behavioral patterns than males. But what if this fundamental assumption is wrong? This interactive analysis presents data from our study of 26 laboratory mice (13 male, 13 female) that challenges this widely accepted belief.</p>
-      <p>Through the visualizations that follow, we'll explore a surprising discovery about sex-based differences in activity patterns that challenges conventional scientific expectations.</p>
+    <div class="authors" style="text-align: center; width: 100%;">
+      <p style="text-align: center; width: 100%;">By&nbsp;Jeru&nbsp;Balares&nbsp;&nbsp;•&nbsp;&nbsp;Jeremy&nbsp;Chun&nbsp;&nbsp;•&nbsp;&nbsp;Peter&nbsp;Shamoun</p>
+    </div>
+
+    <div class="introduction" style="width: 100%; max-width: 100%; padding: 0; margin: 2em 0 4em; text-align: left;">
+      <p style="text-align: left; max-width: 100%; width: 100%; margin-bottom: 1.5em;">When science surprises us, it often reveals our hidden assumptions. In biology, conventional wisdom has long held that female mammals, with their complex hormonal cycles, exhibit more variable behavioral patterns than males. But what if this fundamental assumption is wrong? This interactive analysis presents data from our study of 26 laboratory mice (13 male, 13 female) that challenges this widely accepted belief.</p>
+      
+      <p style="text-align: left; max-width: 100%; width: 100%;">Through the visualizations that follow, we'll explore a surprising discovery about sex-based differences in activity patterns that challenges conventional scientific expectations.</p>
     </div>
     
     <!-- THE "AND" SECTION - Setting up context and expectations -->
