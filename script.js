@@ -458,7 +458,9 @@ function createTemperatureLinePlot(data, filteredSex = "all") {
   // Add X and Y axes
   svg.append("g")
     .attr("transform", `translate(0,${height})`)
-    .call(d3.axisBottom(xScale))
+    .call(d3.axisBottom(xScale)
+      .ticks(10)
+      .tickFormat(d => `${Math.floor(d / 1440) + 1}d`)) // Convert minutes to days
     .append("text")
     .attr("class", "axis-label")
     .attr("x", width / 2)
@@ -477,6 +479,52 @@ function createTemperatureLinePlot(data, filteredSex = "all") {
     .attr("fill", "#000")
     .attr("text-anchor", "middle")
     .text("Temperature (°C)");
+
+  // Add shaded regions for estrus cycles (only if females are included)
+  if (filteredSex === "all" || filteredSex === "female") {
+    // Extract estrus cycle periods
+    const estrusDays = []; // will hold day numbers when estrus occurs
+    const estrusStartMinutes = []; // start minutes of estrus periods
+    const estrusEndMinutes = []; // end minutes of estrus periods
+    
+    // Find all the days with estrus status
+    // According to data loading, estrus occurs every 4 days starting from day 2
+    const maxDay = Math.floor(d3.max(data, d => d.minute) / 1440) + 1;
+    
+    for (let day = 2; day <= maxDay; day += 4) {
+      estrusDays.push(day);
+      // Convert day to minute range (full day)
+      estrusStartMinutes.push((day - 1) * 1440); // days start at 1, so subtract 1
+      estrusEndMinutes.push(day * 1440);
+    }
+    
+    // Add shaded rectangles for estrus periods
+    for (let i = 0; i < estrusStartMinutes.length; i++) {
+      svg.append("rect")
+        .attr("x", xScale(estrusStartMinutes[i]))
+        .attr("y", 0)
+        .attr("width", xScale(estrusEndMinutes[i]) - xScale(estrusStartMinutes[i]))
+        .attr("height", height)
+        .attr("fill", "#FFB6C1") // light pink color for estrus periods
+        .attr("opacity", 0.3)
+        .attr("class", "estrus-region");
+    }
+    
+    // Add a legend item for estrus regions
+    svg.append("rect")
+      .attr("x", width - 120)
+      .attr("y", 60) // position below male/female legend
+      .attr("width", 10)
+      .attr("height", 10)
+      .attr("fill", "#FFB6C1")
+      .attr("opacity", 0.3);
+      
+    svg.append("text")
+      .attr("x", width - 105)
+      .attr("y", 69)
+      .text("Estrus Period")
+      .attr("font-size", "12px");
+  }
 
   // Add scatter points with transition
   svg.selectAll(".line")
@@ -564,6 +612,12 @@ function createTemperatureLinePlot(data, filteredSex = "all") {
             .attr("opacity", 0)
             .remove()
         );
+
+      // Keep the estrus regions visible even when filtering to a single mouse
+      if (selectedMouseId.startsWith('f')) {
+        // If a female mouse is selected, make sure estrus regions remain visible
+        d3.selectAll(".estrus-region").style("display", "block");
+      }
     });
 
   // Add legend
@@ -668,7 +722,9 @@ function createActivityLinePlot(data, filteredSex = "all") {
   // Add X and Y axes
   svg.append("g")
     .attr("transform", `translate(0,${height})`)
-    .call(d3.axisBottom(xScale))
+    .call(d3.axisBottom(xScale)
+      .ticks(10)
+      .tickFormat(d => `${Math.floor(d / 1440) + 1}d`)) // Convert minutes to days
     .append("text")
     .attr("class", "axis-label")
     .attr("x", width / 2)
@@ -687,6 +743,52 @@ function createActivityLinePlot(data, filteredSex = "all") {
     .attr("fill", "#000")
     .attr("text-anchor", "middle")
     .text("Activity Level");
+    
+  // Add shaded regions for estrus cycles (only if females are included)
+  if (filteredSex === "all" || filteredSex === "female") {
+    // Extract estrus cycle periods
+    const estrusDays = []; // will hold day numbers when estrus occurs
+    const estrusStartMinutes = []; // start minutes of estrus periods
+    const estrusEndMinutes = []; // end minutes of estrus periods
+    
+    // Find all the days with estrus status
+    // According to data loading, estrus occurs every 4 days starting from day 2
+    const maxDay = Math.floor(d3.max(data, d => d.minute) / 1440) + 1;
+    
+    for (let day = 2; day <= maxDay; day += 4) {
+      estrusDays.push(day);
+      // Convert day to minute range (full day)
+      estrusStartMinutes.push((day - 1) * 1440); // days start at 1, so subtract 1
+      estrusEndMinutes.push(day * 1440);
+    }
+    
+    // Add shaded rectangles for estrus periods
+    for (let i = 0; i < estrusStartMinutes.length; i++) {
+      svg.append("rect")
+        .attr("x", xScale(estrusStartMinutes[i]))
+        .attr("y", 0)
+        .attr("width", xScale(estrusEndMinutes[i]) - xScale(estrusStartMinutes[i]))
+        .attr("height", height)
+        .attr("fill", "#FFB6C1") // light pink color for estrus periods
+        .attr("opacity", 0.3)
+        .attr("class", "estrus-region");
+    }
+    
+    // Add a legend item for estrus regions
+    svg.append("rect")
+      .attr("x", width - 120)
+      .attr("y", 60) // position below male/female legend
+      .attr("width", 10)
+      .attr("height", 10)
+      .attr("fill", "#FFB6C1")
+      .attr("opacity", 0.3);
+      
+    svg.append("text")
+      .attr("x", width - 105)
+      .attr("y", 69)
+      .text("Estrus Period")
+      .attr("font-size", "12px");
+  }
 
   // Add scatter points with transition
   svg.selectAll(".line")
@@ -722,7 +824,7 @@ function createActivityLinePlot(data, filteredSex = "all") {
         .style("opacity", .9);
       tooltip.html(`
         <strong>Mouse:</strong> ${d[0]}<br>
-        <strong>Activity Level:</strong> ${closestData.activity}<br>
+        <strong>Activity:</strong> ${closestData.activity.toFixed(2)}<br>
         <strong>Day:</strong> ${closestData.day}<br>
         <strong>Light:</strong> ${closestData.lightStatus}<br>
         ${closestData.sex === "female" ? `<strong>Estrus:</strong> ${closestData.estrusStatus ? "Yes" : "No"}<br>` : ""}
@@ -774,8 +876,14 @@ function createActivityLinePlot(data, filteredSex = "all") {
             .attr("opacity", 0)
             .remove()
         );
+        
+      // Keep the estrus regions visible even when filtering to a single mouse
+      if (selectedMouseId.startsWith('f')) {
+        // If a female mouse is selected, make sure estrus regions remain visible
+        d3.selectAll(".estrus-region").style("display", "block");
+      }
     });
-
+    
   // Add legend
   const legend = svg.append("g")
     .attr("transform", `translate(${width - 100}, 20)`);
