@@ -8,22 +8,24 @@
 
 /* ===== Variables ===== */
 :root {
-    /* Colors */
-    --color-primary: #4a6fa5;
-    --color-primary-dark: #385d8a;
-    --color-primary-light: #5c80b5;
-    --color-secondary: #f0f2f5;
-    --color-accent: #e67e22;
-    --color-text: #333;
-    --color-text-light: #666;
-    --color-border: #ddd;
-    --color-temperature: #e74c3c;
-    --color-activity: #3498db;
-    --color-male: #3498db;
-    --color-female: #e74c3c;
-    --color-chart-bg: #f9f9f9;
-  
-    /* Spacing */
+    /* Colors - Refined palette with better contrast */
+    --color-primary: #3a5f93;        /* Darker blue for better contrast */
+    --color-primary-dark: #2a4a76;   /* Even darker blue for hover states */
+    --color-primary-light: #526ea3;  /* Lighter blue for subtle elements */
+    --color-secondary: #f0f2f5;      /* Light gray for backgrounds */
+    --color-accent: #e67e22;         /* Orange accent - unchanged for brand consistency */
+    --color-text: #333333;           /* Dark gray for main text - unchanged */
+    --color-text-light: #595959;     /* Medium gray for secondary text - darkened for better contrast */
+    --color-border: #dddddd;         /* Light gray for borders - unchanged */
+    --color-temperature: #e74c3c;    /* Red for temperature data - unchanged */
+    --color-activity: #2980b9;       /* Slightly darker blue for activity data */
+    --color-male: #2980b9;           /* Matching blue for male data */
+    --color-female: #e74c3c;         /* Red for female data - unchanged */
+    --color-chart-bg: #f9f9f9;       /* Light gray for chart backgrounds - unchanged */
+    --color-focus: #3a5f93;          /* Focus indicator color */
+    --color-highlight: rgba(58, 95, 147, 0.15); /* Highlight background color */
+    
+    /* Spacing - Unchanged */
     --spacing-xs: 0.25rem;
     --spacing-sm: 0.5rem;
     --spacing-md: 1rem;
@@ -31,43 +33,51 @@
     --spacing-xl: 2rem;
     --spacing-xxl: 3rem;
   
-    /* Typography */
+    /* Typography - Enhanced */
     --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
       "Helvetica Neue", sans-serif;
-    --font-size-sm: 0.875rem;
-    --font-size-md: 1rem;
-    --font-size-lg: 1.25rem;
-    --font-size-xl: 1.5rem;
-    --font-size-xxl: 2rem;
-    --font-size-xxxl: 2.5rem;
+    --font-size-sm: 0.875rem;      /* 14px base - unchanged */
+    --font-size-md: 1rem;          /* 16px base - unchanged */
+    --font-size-lg: 1.125rem;      /* 18px - slightly smaller for better hierarchy */
+    --font-size-xl: 1.5rem;        /* 24px - unchanged */
+    --font-size-xxl: 2rem;         /* 32px - unchanged */
+    --font-size-xxxl: 2.75rem;     /* 44px - larger for more impact */
+    
+    /* Line heights - Enhanced */
+    --line-height-tight: 1.2;      /* For headings */
+    --line-height-normal: 1.5;     /* For body text - improved from 1.6 */
+    --line-height-loose: 1.8;      /* For larger text blocks */
   
-    /* Layout */
+    /* Layout - Unchanged */
     --container-max-width: 1200px;
+    
+    /* Border radius - Enhanced for consistency */
     --border-radius-sm: 4px;
-    --border-radius-md: 8px;
-    --border-radius-lg: 12px;
+    --border-radius-md: 6px;      /* Reduced from 8px for consistency */
+    --border-radius-lg: 10px;     /* Reduced from 12px for consistency */
   
-    /* Shadows */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+    /* Shadows - Enhanced */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);                  /* Lighter for subtle elements */
+    --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.09);                  /* Enhanced for main components */
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);                 /* Enhanced for prominent elements */
+    --shadow-focus: 0 0 0 3px rgba(58, 95, 147, 0.25);           /* New focus shadow */
   
-    /* Transitions */
-    --transition-fast: 0.2s ease;
-    --transition-medium: 0.3s ease;
-    --transition-slow: 0.5s ease;
+    /* Transitions - Enhanced */
+    --transition-fast: 0.15s ease-in-out;                        /* Slightly faster */
+    --transition-medium: 0.25s ease-in-out;                      /* Slightly faster */
+    --transition-slow: 0.4s ease-in-out;                         /* Slightly faster */
   
     /* Article specific variables */
     --article-max-width: 800px;
     --article-line-height: 1.6;
     --article-font-size: 18px;
     --article-font-family: Georgia, serif;
-    --article-heading-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --article-heading-font: var(--font-sans);                    /* Consistent with main headings */
   
     /* Base styles */
     --text-color: #2c3e50;
     --bg-color: #ffffff;
-    --link-color: #3498db;
+    --link-color: #3a5f93;                                       /* Matched to primary color */
     --border-color: #eee;
     --font-serif: Georgia, "Times New Roman", serif;
     --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -88,61 +98,96 @@ html {
 body {
     font-family: var(--font-serif);
     font-size: 18px;
-    line-height: 1.6;
+    line-height: var(--line-height-normal);
     color: var(--text-color);
     background: var(--bg-color);
     margin: 0;
     padding: 0;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-sans);
-    line-height: 1.2;
-    margin: 1.5em 0 0.5em;
+    line-height: var(--line-height-tight);
+    margin: 1.75em 0 0.75em;
+    color: var(--color-text);
+    font-weight: 600; /* Slightly bolder for better hierarchy */
 }
 
 h1 {
-    font-size: 2.5em;
+    font-size: var(--font-size-xxxl);
     text-align: center;
-    margin: 1em 0;
+    margin: 1.5em auto 1.25em;
+    max-width: 1100px;
+    letter-spacing: -0.02em; /* Tighter letter spacing for large headers */
+    color: var(--color-primary);
+    line-height: 1.2;
+    padding: 0 1rem;
 }
 
 h2 {
-    font-size: 1.75em;
+    font-size: var(--font-size-xxl);
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.3em;
+    padding-bottom: 0.4em;
+    margin-bottom: 0.75em;
+    letter-spacing: -0.01em;
 }
 
 h3 {
-    font-size: 1.3em;
+    font-size: var(--font-size-xl);
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+}
+
+h4 {
+    font-size: var(--font-size-lg);
+    margin-top: 1.25em;
+    margin-bottom: 0.5em;
 }
 
 p {
-    margin: 1em 0;
+    margin: 0 0 1.25em;
+    max-width: 70ch; /* Improved readability with controlled line length */
+}
+
+/* Add appropriate margin to consecutive paragraphs */
+p + p {
+    margin-top: -0.5em;
 }
 
 a {
     color: var(--link-color);
     text-decoration: none;
-    transition: color var(--transition-fast);
+    transition: color var(--transition-fast), outline var(--transition-fast);
+    border-bottom: 1px solid transparent;
 }
 
-a:hover {
-    text-decoration: underline;
+a:hover, a:focus {
+    color: var(--color-primary-dark);
+    border-bottom-color: currentColor;
+}
+
+a:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
 }
 
 ul, ol {
-    padding-left: 2em;
-    margin: 1em 0;
+    padding-left: 1.5em; /* Slightly reduced from 2em */
+    margin: 1.25em 0;
 }
 
 li {
     margin: 0.5em 0;
+    max-width: 65ch; /* Control line length for better readability */
 }
 
 img {
     max-width: 100%;
     height: auto;
+    display: block; /* Avoid unwanted spacing */
 }
 
 /* ===== Layout ===== */
@@ -166,6 +211,11 @@ section {
     z-index: 100;
     box-shadow: var(--shadow-sm);
     padding: 1em 0;
+    transition: box-shadow var(--transition-medium);
+}
+
+.site-header:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .site-header .container {
@@ -181,6 +231,11 @@ section {
     font-size: var(--font-size-xl);
     font-weight: 700;
     color: var(--color-primary);
+    transition: transform var(--transition-fast);
+}
+
+.logo:hover {
+    transform: translateY(-1px);
 }
 
 .main-nav {
@@ -199,14 +254,39 @@ section {
     color: var(--color-text);
     font-weight: 600;
     cursor: pointer;
-    transition: background-color var(--transition-fast);
+    transition: all var(--transition-fast);
     text-align: center;
     text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: var(--transition-medium);
 }
 
 .btn:hover {
     background-color: #e0e0e0;
     text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-primary {
@@ -221,11 +301,39 @@ section {
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn:disabled::before {
+    display: none;
+}
+
+.btn:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
 }
 
 /* ===== Intro Section ===== */
 .intro {
     margin: 2em 0 4em;
+}
+
+.introduction {
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-loose);
+    max-width: 900px;
+    margin: 0 auto 4em;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.introduction p {
+    margin-bottom: 1.5em;
+}
+
+.introduction p:last-child {
+    margin-bottom: 0;
 }
 
 .notice {
@@ -239,13 +347,76 @@ section {
     line-height: 1.7;
 }
 
+/* ===== Visualization Section ===== */
+.visualization-section {
+    margin: 6em 0;
+    padding: 3em 0;
+    border-top: 1px solid var(--border-color);
+    position: relative;
+    transition: transform var(--transition-slow);
+}
+
+.visualization-section:first-of-type {
+    border-top: none;
+}
+
+.visualization-section::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+}
+
+.visualization-section h2 {
+    font-size: 1.9em;
+    color: var(--color-primary);
+    margin-bottom: 0.75em;
+    border-bottom: none;
+    position: relative;
+    padding-bottom: 0.5em;
+    text-align: center;
+}
+
+.visualization-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: var(--color-primary);
+}
+
+.visualization-section > p {
+    text-align: center;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2em;
+}
+
 /* ===== Visualization Containers ===== */
 .visualization-container {
-    margin: 2em 0;
-    padding: 2em;
+    margin: 3em 0;
+    padding: 2.5em;
     background: var(--bg-color);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-md);
+    transition: box-shadow var(--transition-medium), transform var(--transition-medium);
+    position: relative;
+    overflow: hidden;
+}
+
+.visualization-container:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
 }
 
 .visualization-container h3 {
@@ -254,6 +425,19 @@ section {
     font-size: 1.3em;
     color: var(--text-color);
     text-align: center;
+    position: relative;
+    padding-bottom: 0.75em;
+}
+
+.visualization-container h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background-color: var(--color-primary-light);
 }
 
 .visualization-container canvas {
@@ -262,6 +446,22 @@ section {
     margin: 1em 0;
     background: var(--bg-color);
     border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition-medium);
+}
+
+.visualization-container canvas:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.chart-description {
+    margin: 2em 0 1em;
+    padding-top: 1em;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.95em;
+    line-height: 1.6;
+    color: var(--color-text-light);
+    max-width: 100%;
 }
 
 .controls-container {
@@ -274,23 +474,37 @@ section {
 
 #visualization-controls {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5em;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.75em;
 }
 
 #visualization-controls label {
     display: block;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.6em;
     font-weight: 500;
+    color: var(--color-text);
 }
 
 #visualization-controls select {
     width: 100%;
-    padding: 0.5em;
-    border: 1px solid var(--border-color);
+    padding: 0.6em 0.8em;
+    border: 1px solid var(--color-border);
     border-radius: var(--border-radius-sm);
     background: var(--bg-color);
-    color: var(--text-color);
+    color: var(--color-text);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233a5f93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    padding-right: 32px;
+}
+
+#visualization-controls select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus);
 }
 
 #visualization-controls button {
@@ -300,11 +514,17 @@ section {
     background: var(--color-primary);
     color: white;
     cursor: pointer;
-    transition: background-color var(--transition-fast);
+    transition: background-color var(--transition-fast), transform var(--transition-fast);
+    font-weight: 600;
 }
 
 #visualization-controls button:hover {
     background: var(--color-primary-dark);
+    transform: translateY(-2px);
+}
+
+#visualization-controls button:active {
+    transform: translateY(1px);
 }
 
 #visualization-controls button[type="reset"] {
@@ -315,15 +535,64 @@ section {
     background: var(--color-text);
 }
 
+#visualization-controls button:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+}
+
 #stats {
-    margin-top: 1em;
-    padding: 1em;
+    margin-top: 1.5em;
+    padding: 1.5em;
     background: var(--color-chart-bg);
     border-radius: var(--border-radius-sm);
+    border-left: 3px solid var(--color-primary);
 }
 
 #stats p {
     margin: 0.5em 0;
+}
+
+/* Key observations section */
+.key-observations {
+    margin: 2.5em 0;
+    padding: 1.75em 2em;
+    background: var(--color-highlight);
+    border-left: 5px solid var(--color-primary);
+    border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+    transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+}
+
+.key-observations:hover {
+    transform: translateX(5px);
+    box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.key-observations h4 {
+    margin-top: 0;
+    color: var(--color-primary);
+    font-size: 1.1em;
+    margin-bottom: 1em;
+}
+
+.key-observations ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 1em 0 0;
+}
+
+.key-observations li {
+    margin: 0.75em 0;
+    padding-left: 1.5em;
+    position: relative;
+}
+
+.key-observations li::before {
+    content: "•";
+    color: var(--color-primary);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+    font-size: 1.2em;
 }
 
 @media (max-width: 768px) {
@@ -485,300 +754,968 @@ section {
 }
 
 /* ===== Responsive Design ===== */
-@media (min-width: 768px) {
-    .visualization-wrapper {
-        flex-direction: row;
-    }
-
-    .chart-area {
-        flex: 3;
-    }
-
-    .pattern-container {
-        flex: 2;
-        height: auto;
-    }
-
-    .controls {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .info-cards {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .site-footer .container {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-}
-
-@media (min-width: 1024px) {
-    .controls {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    #main-chart {
-        height: 400px;
-    }
-}
-
-/* Article styles */
-article {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 2em;
-}
-
-.abstract {
-    font-style: italic;
-    margin: 2em 0;
-    padding: 1.5em;
-    background: var(--border-color);
-    border-radius: 4px;
-}
-
-.key-findings {
-    margin: 2em 0;
-}
-
-.key-findings ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-.key-findings li {
-    margin: 1em 0;
-    padding-left: 1.5em;
-    position: relative;
-}
-
-.key-findings li::before {
-    content: "•";
-    color: var(--color-primary);
-    font-weight: bold;
-    position: absolute;
-    left: 0;
-}
-
-.method-item,
-.result-item {
-    background: var(--color-background);
-    padding: 1.5em;
-    margin: 1.5em 0;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.future-directions ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-.future-directions li {
-    margin: 1em 0;
-    padding-left: 1.5em;
-    position: relative;
-}
-
-.future-directions li::before {
-    content: "→";
-    color: var(--color-primary);
-    position: absolute;
-    left: 0;
-}
-
-.acknowledgments {
-    margin: 4em 0 2em;
-    font-style: italic;
-    color: var(--color-text);
-    opacity: 0.8;
-}
-
-/* Responsive adjustments */
 @media (max-width: 768px) {
+    html {
+        font-size: 15px; /* Slightly smaller base font size on mobile */
+    }
+    
     body {
-        font-size: 16px;
+        padding: 0;
     }
     
     article {
-        padding: 1em;
-    }
-    
-    figure {
-        margin: 2em -1em;
-        padding: 1em;
+        padding: 1.5em;
     }
     
     h1 {
-        font-size: 2em;
-    }
-}
-
-/* Print styles */
-@media print {
-    body {
-        font-size: 12pt;
-        color: #000;
-        background: #fff;
+        font-size: 2.2em;
+        margin: 1em 0;
     }
     
-    article {
-        max-width: none;
-        padding: 0;
-        margin: 0;
+    h2 {
+        font-size: 1.8em;
     }
     
-    #theme-toggle {
-        display: none;
+    .visualization-section {
+        margin: 4em 0;
+        padding: 2em 0;
+    }
+    
+    .visualization-container {
+        margin: 1.5em -0.5em;
+        padding: 1.5em;
+    }
+    
+    .visualization-container canvas {
+        height: 350px;
+    }
+    
+    #visualization-controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .introduction {
+        font-size: 1em;
+    }
+    
+    .key-observations {
+        padding: 1.25em 1.5em;
+    }
+    
+    #comparison-controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    #comparison-controls > div {
+        width: 100%;
     }
 }
 
-/* ===== Visualization Grid ===== */
-.visualization-grid {
-    margin: 2em -2em;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2em;
-    padding: 2em;
-    background: var(--color-chart-bg);
-}
-
-.visualization-container {
-    background: var(--bg-color);
-    padding: 1.5em;
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-md);
-}
-
-.visualization-container h3 {
-    margin-top: 0;
-    margin-bottom: 1em;
-    font-size: 1.2em;
-    color: var(--text-color);
-}
-
-.visualization-container canvas {
-    width: 100%;
-    height: 300px;
-    background: var(--bg-color);
-    border-radius: var(--border-radius-sm);
-}
-
-.controls-container {
-    grid-column: 1 / -1;
-    background: var(--bg-color);
-    padding: 1.5em;
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-md);
-}
-
-#stats {
-    margin-top: 1em;
-    padding: 1em;
-    background: var(--color-chart-bg);
-    border-radius: var(--border-radius-sm);
-}
-
-#stats p {
-    margin: 0.5em 0;
-}
-
-@media (max-width: 1024px) {
+@media (min-width: 769px) and (max-width: 1024px) {
     .visualization-grid {
         grid-template-columns: 1fr;
-        margin: 2em -1em;
-        padding: 1em;
-        gap: 1em;
+    }
+    
+    .visualization-container {
+        padding: 1.75em;
     }
 }
 
-/* Add new section for visualization-driven layout */
-.visualization-section {
-    margin: 4em 0;
-    padding: 2em 0;
-    border-top: 1px solid var(--border-color);
+@media (min-width: 1025px) {
+    .visualization-wrapper {
+        display: flex;
+        gap: 2em;
+    }
+    
+    .controls {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
-.visualization-section:first-of-type {
-    border-top: none;
-}
-
-.visualization-section h2 {
-    font-size: 1.8em;
-    color: var(--text-color);
-    margin-bottom: 1em;
-    border-bottom: none;
-}
-
-.key-observations {
-    margin: 2em 0;
-    padding: 1.5em;
-    background: var(--bg-color);
-    border-left: 4px solid var(--color-primary);
-    border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
-}
-
-.key-observations h4 {
-    margin-top: 0;
-    color: var(--color-primary);
-    font-size: 1.1em;
-}
-
-.key-observations ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 1em 0 0;
-}
-
-.key-observations li {
-    margin: 0.5em 0;
-    padding-left: 1.5em;
-    position: relative;
-}
-
-.key-observations li::before {
-    content: "•";
-    color: var(--color-primary);
+/* ===== Enhanced Tooltips ===== */
+.tooltip {
     position: absolute;
-    left: 0;
-    font-weight: bold;
+    background-color: white;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    padding: 10px 14px;
+    pointer-events: none;
+    font-size: 14px;
+    line-height: 1.4;
+    box-shadow: var(--shadow-md);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: translateY(10px);
+    max-width: 300px;
 }
 
-.introduction {
-    font-size: 1.2em;
-    line-height: 1.6;
-    margin: 2em 0 4em;
-    color: var(--text-color);
+.tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.controls-section {
-    margin: 4em 0;
-    padding: 2em 0;
-    border-top: 1px solid var(--border-color);
+.tooltip-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--color-primary);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 4px;
 }
 
-.controls-section h2 {
-    text-align: center;
-    margin-bottom: 1em;
+.tooltip-value {
+    display: flex;
+    justify-content: space-between;
+    margin: 3px 0;
 }
 
-.controls-section p {
-    text-align: center;
-    margin-bottom: 2em;
+.tooltip-label {
+    font-weight: 500;
+    margin-right: 8px;
 }
 
-.conclusion {
-    margin: 4em 0;
-    padding: 2em 0;
-    border-top: 1px solid var(--border-color);
-}
-
-.conclusion p {
-    font-size: 1.1em;
-    line-height: 1.6;
+/* ===== Chart Enhancements ===== */
+.svg-container {
+    width: 100%;
+    background: var(--color-chart-bg);
+    border-radius: var(--border-radius-sm);
     margin: 1em 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition-medium);
+    min-height: 380px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.svg-container:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.svg-container svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    max-width: 100%;
+}
+
+/* Make visualizations with specific IDs take full width of container */
+#visualization1,
+#line-plot-chart,
+#gender-comparison-chart,
+#heatmap-chart {
+    height: 500px;
+}
+
+.line {
+    transition: stroke-width 0.3s ease, opacity 0.3s ease;
+}
+
+.line:hover {
+    opacity: 1;
+    stroke-width: 3px;
+}
+
+.dot {
+    transition: r 0.3s ease, stroke-width 0.3s ease;
+}
+
+.dot:hover {
+    r: 6;
+    stroke-width: 2;
+}
+
+.axis {
+    font-family: var(--font-sans);
+    font-size: 12px;
+}
+
+.axis-label {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    fill: var(--color-text);
+}
+
+.chart-title {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 600;
+    text-anchor: middle;
+    fill: var(--color-text);
+}
+
+.legend text {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    fill: var(--color-text);
+}
+
+.legend-item {
+    cursor: pointer;
+    transition: opacity var(--transition-fast);
+}
+
+.legend-item:hover {
+    opacity: 0.7;
+}
+
+/* ===== Button Container Enhancement ===== */
+#button-container {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+#button-container button {
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: 0.6rem 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#button-container button:hover {
+    background-color: var(--color-primary-light);
+    color: white;
+    transform: translateY(-2px);
+}
+
+#button-container button.active {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+#button-container button:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+}
+
+/* Enhanced Loading State */
+.loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+}
+
+.loading-indicator::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Filter container enhancements */
+.filter-container {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.filter-container label {
+    margin-right: 0.5rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.filter-container select {
+    padding: 0.6em 0.8em;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    background-color: white;
+    font-size: 0.9rem;
+    min-width: 120px;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233a5f93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    padding-right: 32px;
+}
+
+.filter-container select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus);
+}
+
+/* ===== Accessibility Improvements ===== */
+:focus {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* High contrast focus for keyboard navigation */
+:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001s !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .visualization-container:hover,
+    .key-observations:hover,
+    .btn:hover::before {
+        transform: none !important;
+    }
+}
+
+/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
+
+/* Document
+   ========================================================================== */
+
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ */
+
+html {
+    line-height: 1.15; /* 1 */
+    -webkit-text-size-adjust: 100%; /* 2 */
+}
+
+/* Sections
+   ========================================================================== */
+
+/**
+ * Remove the margin in all browsers.
+ */
+
+body {
+    margin: 0;
+}
+
+/**
+ * Render the `main` element consistently in IE.
+ */
+
+main {
+    display: block;
+}
+
+/**
+ * Correct the font size and margin on `h1` elements within `section` and
+ * `article` contexts in Chrome, Firefox, and Safari.
+ */
+
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+
+/* Grouping content
+   ========================================================================== */
+
+/**
+ * 1. Add the correct box sizing in Firefox.
+ * 2. Show the overflow in Edge and IE.
+ */
+
+hr {
+    box-sizing: content-box; /* 1 */
+    height: 0; /* 1 */
+    overflow: visible; /* 2 */
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+
+pre {
+    font-family: monospace, monospace; /* 1 */
+    font-size: 1em; /* 2 */
+}
+
+/* Text-level semantics
+   ========================================================================== */
+
+/**
+ * Remove the gray background on active links in IE 10.
+ */
+
+a {
+    background-color: transparent;
+}
+
+/**
+ * 1. Remove the bottom border in Chrome 57-
+ * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+ */
+
+abbr[title] {
+    border-bottom: none; /* 1 */
+    text-decoration: underline; /* 2 */
+    text-decoration: underline dotted; /* 2 */
+}
+
+/**
+ * Add the correct font weight in Chrome, Edge, and Safari.
+ */
+
+b,
+strong {
+    font-weight: bolder;
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+
+code,
+kbd,
+samp {
+    font-family: monospace, monospace; /* 1 */
+    font-size: 1em; /* 2 */
+}
+
+/**
+ * Add the correct font size in all browsers.
+ */
+
+small {
+    font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` elements from affecting the line height in
+ * all browsers.
+ */
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+sup {
+    top: -0.5em;
+}
+
+/* Embedded content
+   ========================================================================== */
+
+/**
+ * Remove the border on images inside links in IE 10.
+ */
+
+img {
+    border-style: none;
+}
+
+/* Forms
+   ========================================================================== */
+
+/**
+ * 1. Change the font styles in all browsers.
+ * 2. Remove the margin in Firefox and Safari.
+ */
+
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: inherit; /* 1 */
+    font-size: 100%; /* 1 */
+    line-height: 1.15; /* 1 */
+    margin: 0; /* 2 */
+}
+
+/**
+ * Show the overflow in IE.
+ * 1. Show the overflow in Edge.
+ */
+
+button,
+input {
+    /* 1 */
+    overflow: visible;
+}
+
+/**
+ * Remove the inheritance of text transform in Edge, Firefox, and IE.
+ * 1. Remove the inheritance of text transform in Firefox.
+ */
+
+button,
+select {
+    /* 1 */
+    text-transform: none;
+}
+
+/**
+ * Correct the inability to style clickable types in iOS and Safari.
+ */
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+    -webkit-appearance: button;
+}
+
+/**
+ * Remove the inner border and padding in Firefox.
+ */
+
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+    border-style: none;
+    padding: 0;
+}
+
+/**
+ * Restore the focus styles unset by the previous rule.
+ */
+
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+    outline: 1px dotted ButtonText;
+}
+
+/**
+ * Correct the padding in Firefox.
+ */
+
+fieldset {
+    padding: 0.35em 0.75em 0.625em;
+}
+
+/**
+ * 1. Correct the text wrapping in Edge and IE.
+ * 2. Correct the color inheritance from `fieldset` elements in IE.
+ * 3. Remove the padding so developers are not caught out when they zero out
+ *    `fieldset` elements in all browsers.
+ */
+
+legend {
+    box-sizing: border-box; /* 1 */
+    color: inherit; /* 2 */
+    display: table; /* 1 */
+    max-width: 100%; /* 1 */
+    padding: 0; /* 3 */
+    white-space: normal; /* 1 */
+}
+
+/**
+ * Add the correct vertical alignment in Chrome, Firefox, and Opera.
+ */
+
+progress {
+    vertical-align: baseline;
+}
+
+/**
+ * Remove the default vertical scrollbar in IE 10+.
+ */
+
+textarea {
+    overflow: auto;
+}
+
+/**
+ * 1. Add the correct box sizing in IE 10.
+ * 2. Remove the padding in IE 10.
+ */
+
+[type="checkbox"],
+[type="radio"] {
+    box-sizing: border-box; /* 1 */
+    padding: 0; /* 2 */
+}
+
+/**
+ * Correct the cursor style of increment and decrement buttons in Chrome.
+ */
+
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+    height: auto;
+}
+
+/**
+ * 1. Correct the odd appearance in Chrome and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+
+[type="search"] {
+    -webkit-appearance: textfield; /* 1 */
+    outline-offset: -2px; /* 2 */
+}
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+
+[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+/**
+ * 1. Correct the inability to style clickable types in iOS and Safari.
+ * 2. Change font properties to `inherit` in Safari.
+ */
+
+::-webkit-file-upload-button {
+    -webkit-appearance: button; /* 1 */
+    font: inherit; /* 2 */
+}
+
+/* Interactive
+   ========================================================================== */
+
+/*
+ * Add the correct display in Edge, IE 10+, and Firefox.
+ */
+
+details {
+    display: block;
+}
+
+/*
+ * Add the correct display in all browsers.
+ */
+
+summary {
+    display: list-item;
+}
+
+/* Misc
+   ========================================================================== */
+
+/**
+ * Add the correct display in IE 10+.
+ */
+
+template {
+    display: none;
+}
+
+/**
+ * Add the correct display in IE 10.
+ */
+
+[hidden] {
+    display: none;
+}
+
+.tooltip {
+    position: absolute;
+    background-color: white;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    padding: 10px 14px;
+    pointer-events: none;
+    font-size: 14px;
+    line-height: 1.4;
+    box-shadow: var(--shadow-md);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: translateY(10px);
+    max-width: 300px;
+}
+
+.tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.tooltip-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--color-primary);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 4px;
+}
+
+.tooltip-value {
+    display: flex;
+    justify-content: space-between;
+    margin: 3px 0;
+}
+
+.tooltip-label {
+    font-weight: 500;
+    margin-right: 8px;
+}
+
+/* ===== Chart Enhancements ===== */
+.svg-container {
+    width: 100%;
+    background: var(--color-chart-bg);
+    border-radius: var(--border-radius-sm);
+    margin: 1em 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition-medium);
+    min-height: 380px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.svg-container:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.svg-container svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    max-width: 100%;
+}
+
+/* Make visualizations with specific IDs take full width of container */
+#visualization1,
+#line-plot-chart,
+#gender-comparison-chart,
+#heatmap-chart {
+    height: 500px;
+}
+
+.line {
+    transition: stroke-width 0.3s ease, opacity 0.3s ease;
+}
+
+.line:hover {
+    opacity: 1;
+    stroke-width: 3px;
+}
+
+.dot {
+    transition: r 0.3s ease, stroke-width 0.3s ease;
+}
+
+.dot:hover {
+    r: 6;
+    stroke-width: 2;
+}
+
+.axis {
+    font-family: var(--font-sans);
+    font-size: 12px;
+}
+
+.axis-label {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    fill: var(--color-text);
+}
+
+.chart-title {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 600;
+    text-anchor: middle;
+    fill: var(--color-text);
+}
+
+.legend text {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    fill: var(--color-text);
+}
+
+.legend-item {
+    cursor: pointer;
+    transition: opacity var(--transition-fast);
+}
+
+.legend-item:hover {
+    opacity: 0.7;
+}
+
+/* ===== Button Container Enhancement ===== */
+#button-container {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+#button-container button {
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: 0.6rem 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#button-container button:hover {
+    background-color: var(--color-primary-light);
+    color: white;
+    transform: translateY(-2px);
+}
+
+#button-container button.active {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+#button-container button:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+}
+
+/* Enhanced Loading State */
+.loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+}
+
+.loading-indicator::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Filter container enhancements */
+.filter-container {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.filter-container label {
+    margin-right: 0.5rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.filter-container select {
+    padding: 0.6em 0.8em;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    background-color: white;
+    font-size: 0.9rem;
+    min-width: 120px;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233a5f93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    padding-right: 32px;
+}
+
+.filter-container select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus);
+}
+
+/* ===== Accessibility Improvements ===== */
+:focus {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* High contrast focus for keyboard navigation */
+:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001s !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .visualization-container:hover,
+    .key-observations:hover,
+    .btn:hover::before {
+        transform: none !important;
+    }
 }
 
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
@@ -1210,6 +2147,7 @@ template {
   flex-wrap: wrap;
   gap: 1.5rem;
   margin-bottom: 1.5rem;
+  justify-content: center;
 }
 
 #comparison-controls > div {
@@ -1218,25 +2156,57 @@ template {
 }
 
 #comparison-controls label {
-  margin-right: 0.5rem;
+  margin-right: 0.75rem;
   font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
 }
 
 #comparison-controls select {
-  padding: 0.5rem;
+  padding: 0.6em 0.8em;
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm);
   background-color: white;
   font-size: 0.9rem;
-  min-width: 120px;
+  min-width: 150px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233a5f93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 32px;
+}
+
+#comparison-controls select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
 }
 
 #gender-comparison-chart {
   width: 100%;
+  height: 500px;
+  min-height: 400px;
   background: var(--color-chart-bg);
   border-radius: var(--border-radius-sm);
   position: relative;
-  padding-right: 10px;
+  padding: 0;
+  margin: 2em 0;
+  transition: box-shadow var(--transition-medium);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#gender-comparison-chart:hover {
+  box-shadow: var(--shadow-md);
+}
+
+#gender-comparison-chart svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 #gender-comparison-tooltip {
@@ -1315,6 +2285,165 @@ template {
   #comparison-controls select {
     flex: 1;
   }
+}
+
+/* ===== Analysis Notes Styling ===== */
+.analysis-notes {
+    margin: 2.5em 0;
+    padding: 1.5em 2em;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+}
+
+.analysis-notes:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.analysis-notes h4 {
+    margin-top: 0;
+    color: var(--color-primary);
+    font-size: 1.15em;
+    margin-bottom: 0.8em;
+    position: relative;
+    padding-bottom: 0.5em;
+}
+
+.analysis-notes h4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--color-primary-light);
+}
+
+.analysis-notes p {
+    margin-bottom: 0.9em;
+    line-height: var(--line-height-normal);
+}
+
+.analysis-notes p:last-child {
+    margin-bottom: 0;
+}
+
+/* ===== Section Divider ===== */
+.section-divider {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+    margin: 2.5em 0;
+    position: relative;
+}
+
+.section-divider::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-primary-light);
+    border-radius: 50%;
+}
+
+/* ===== Chart Description ===== */
+.chart-description {
+    margin: 2em 0 1em;
+    padding: 1.25em 1.5em;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.95em;
+    line-height: 1.6;
+    color: var(--color-text-light);
+    max-width: 100%;
+    background-color: var(--color-secondary);
+    border-radius: var(--border-radius-sm);
+    position: relative;
+}
+
+.chart-description::before {
+    content: 'Description';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background-color: var(--color-secondary);
+    padding: 0 10px;
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.chart-description p {
+    margin: 0;
+    max-width: none;
+}
+
+/* ===== Conclusion Section ===== */
+.conclusion {
+    margin: 5em 0 3em;
+    padding: 3em 0 1em;
+    border-top: 1px solid var(--color-border);
+    position: relative;
+}
+
+.conclusion::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+}
+
+.conclusion h2 {
+    color: var(--color-primary);
+    font-size: 1.9em;
+    text-align: center;
+    margin-bottom: 1.5em;
+    position: relative;
+    padding-bottom: 0.5em;
+    border-bottom: none;
+}
+
+.conclusion h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background-color: var(--color-primary);
+}
+
+.conclusion p {
+    font-size: 1.1em;
+    line-height: 1.7;
+    margin: 1.2em auto;
+    max-width: 900px;
+}
+
+/* ===== Hover effects for visualization sections ===== */
+.visualization-section {
+    position: relative;
+    transition: transform 0.3s ease-out;
+}
+
+.visualization-section:hover::before {
+    transform: translateX(-50%) scale(1.2);
+    background-color: var(--color-primary-light);
+    transition: transform 0.3s ease-out, background-color 0.3s ease-out;
 }
   
   

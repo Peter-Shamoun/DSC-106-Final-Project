@@ -1,6 +1,7 @@
 // Global variables
 let globalData = [];
-let tooltip;
+// Remove global tooltip
+// let tooltip;
 
 // Initialize the visualization
 document.addEventListener('DOMContentLoaded', async function () {
@@ -9,8 +10,8 @@ document.addEventListener('DOMContentLoaded', async function () {
   d3.select("#line-plot-chart").html('<div class="loading">Loading data, please wait...</div>');
   d3.select("#heatmap-chart").html('<div class="loading">Loading data, please wait...</div>');
   
-  // Initialize tooltip
-  tooltip = d3.select("#tooltip");
+  // Remove tooltip initialization
+  // tooltip = d3.select("#tooltip");
 
   try {
     // Load and process data
@@ -37,6 +38,28 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Set up the gender comparison visualization
     setupGenderComparisonControls(data);
     createGenderComparisonChart(data);
+    
+    // Set up temperature/activity toggle buttons
+    d3.select("#temp-toggle").classed("active", true);
+    
+    d3.select("#temp-toggle").on("click", function() {
+      d3.select("#temp-toggle").classed("active", true);
+      d3.select("#activity-toggle").classed("active", false);
+      // Clear any existing tooltip from previous visualization
+      d3.selectAll(".tooltip").remove(); 
+      setupFiltersTemperatureLinePlot();
+      createTemperatureLinePlot(globalData, "all");
+    });
+    
+    d3.select("#activity-toggle").on("click", function() {
+      d3.select("#activity-toggle").classed("active", true);
+      d3.select("#temp-toggle").classed("active", false);
+      // Clear any existing tooltip from previous visualization
+      d3.selectAll(".tooltip").remove();
+      setupFiltersActivityLinePlot();
+      createActivityLinePlot(globalData, "all");
+    });
+    
   } catch (error) {
     console.error("Error loading or processing data:", error);
     d3.select("#visualization1").html('<div class="alert alert-danger">Error loading data. Please try again later.</div>');
@@ -168,6 +191,18 @@ function createScatterPlot(data, filteredSex = "all") {
 
   // Clear previous SVG
   d3.select("#visualization1").html("");
+  
+  // Create tooltip element
+  const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("background-color", "white")
+    .style("border", "1px solid #ddd")
+    .style("border-radius", "4px")
+    .style("padding", "10px")
+    .style("pointer-events", "none")
+    .style("z-index", "1000");
 
   // Create SVG container with responsive design
   const svg = d3.select("#visualization1")
@@ -226,6 +261,12 @@ function createScatterPlot(data, filteredSex = "all") {
     .attr("fill", d => colorScale(d.sex))
     .attr("opacity", 0.6)
     .on("mouseover", function (event, d) {
+      // Highlight current point
+      d3.select(this)
+        .attr("stroke", "#333")
+        .attr("stroke-width", 2)
+        .attr("r", 5);
+        
       // Show tooltip
       tooltip.transition()
         .duration(200)
@@ -242,6 +283,11 @@ function createScatterPlot(data, filteredSex = "all") {
         .style("top", (event.pageY - 28) + "px");
     })
     .on("mouseout", function () {
+      // Restore point
+      d3.select(this)
+        .attr("stroke", "none")
+        .attr("r", 3);
+        
       // Hide tooltip
       tooltip.transition()
         .duration(500)
@@ -367,6 +413,18 @@ function createTemperatureLinePlot(data, filteredSex = "all") {
 
   // Clear previous SVG
   d3.select("#line-plot-chart").html("");
+  
+  // Create tooltip element
+  const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("background-color", "white")
+    .style("border", "1px solid #ddd")
+    .style("border-radius", "4px")
+    .style("padding", "10px")
+    .style("pointer-events", "none")
+    .style("z-index", "1000");
 
   // Create SVG container with responsive design
   const svg = d3.select("#line-plot-chart")
@@ -436,6 +494,11 @@ function createTemperatureLinePlot(data, filteredSex = "all") {
       (d[1])
     )
     .on("mouseover", function (event, d) {
+      // Highlight the line
+      d3.select(this)
+        .attr("stroke-width", 3)
+        .attr("opacity", 1);
+        
       // Find the closest data point to the mouse position
       const mouseX = d3.pointer(event, this)[0];
       const x0 = xScale.invert(mouseX);
@@ -458,6 +521,11 @@ function createTemperatureLinePlot(data, filteredSex = "all") {
         .style("top", (event.pageY - 28) + "px");
     })
     .on("mouseout", function () {
+      // Restore the line appearance
+      d3.select(this)
+        .attr("stroke-width", 1.5)
+        .attr("opacity", 0.6);
+      
       // Hide tooltip
       tooltip.transition()
         .duration(500)
@@ -555,6 +623,18 @@ function createActivityLinePlot(data, filteredSex = "all") {
 
   // Clear previous SVG
   d3.select("#line-plot-chart").html("");
+  
+  // Create tooltip element
+  const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("background-color", "white")
+    .style("border", "1px solid #ddd")
+    .style("border-radius", "4px")
+    .style("padding", "10px")
+    .style("pointer-events", "none")
+    .style("z-index", "1000");
 
   // Create SVG container with responsive design
   const svg = d3.select("#line-plot-chart")
@@ -624,6 +704,11 @@ function createActivityLinePlot(data, filteredSex = "all") {
       (d[1])
     )
     .on("mouseover", function (event, d) {
+      // Highlight the line
+      d3.select(this)
+        .attr("stroke-width", 3)
+        .attr("opacity", 1);
+        
       // Find the closest data point to the mouse position
       const mouseX = d3.pointer(event, this)[0];
       const x0 = xScale.invert(mouseX);
@@ -646,6 +731,11 @@ function createActivityLinePlot(data, filteredSex = "all") {
         .style("top", (event.pageY - 28) + "px");
     })
     .on("mouseout", function () {
+      // Restore the line appearance
+      d3.select(this)
+        .attr("stroke-width", 1.5)
+        .attr("opacity", 0.6);
+      
       // Hide tooltip
       tooltip.transition()
         .duration(500)
@@ -780,6 +870,18 @@ function createActivityHeatmap(data, filteredSex = "all", filteredEstrus = "all"
   // Clear previous SVG
   d3.select("#heatmap-chart").html("");
   
+  // Create tooltip element
+  const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("background-color", "white")
+    .style("border", "1px solid #ddd")
+    .style("border-radius", "4px")
+    .style("padding", "10px")
+    .style("pointer-events", "none")
+    .style("z-index", "1000");
+  
   // Create SVG container with responsive design
   const svg = d3.select("#heatmap-chart")
     .append("svg")
@@ -835,6 +937,11 @@ function createActivityHeatmap(data, filteredSex = "all", filteredEstrus = "all"
     .attr("stroke", "#333")
     .attr("stroke-width", 2)
     .attr("marker-end", "url(#arrowhead)");
+
+  // Define default clock hand position
+  const defaultEndX = 0;
+  const defaultEndY = -innerRadius + 20;
+  const handLength = innerRadius - 20;
   
   // Add hour sectors (radial divisions)
   hours.forEach(hour => {
@@ -867,55 +974,7 @@ function createActivityHeatmap(data, filteredSex = "all", filteredEstrus = "all"
         .attr("class", "hour-sector")
         .attr("data-hour", hour) // Store hour for easy reference
         .attr("data-day", day)   // Store day for easy reference
-        .attr("data-shown", isDayShown) // Store whether day is shown
-        .on("mouseover", function(event) {
-          // Only show tooltip and update clock hand if the day is shown
-          if (isDayShown) {
-            // Show tooltip
-            tooltip.transition()
-              .duration(200)
-              .style("opacity", .9);
-            
-            const periodOfDay = hour < 12 ? 
-              (hour < 6 ? "Early Morning" : "Morning") : 
-              (hour < 18 ? "Afternoon" : "Evening");
-            
-            const lightStatus = (hour >= 6 && hour < 18) ? "Light On" : "Light Off";
-            
-            const estrusStatus = ((day - 2) % 4 === 0) ? "Estrus" : "Non-Estrus";
-            
-            tooltip.html(`
-              <strong>Day:</strong> ${day}<br>
-              <strong>Hour:</strong> ${hour}:00<br>
-              <strong>Period:</strong> ${periodOfDay}<br>
-              <strong>Light:</strong> ${lightStatus}<br>
-              ${filteredSex === "female" ? `<strong>Estrus Status:</strong> ${estrusStatus}<br>` : ''}
-              <strong>Avg Activity:</strong> ${activityValue.toFixed(2)}<br>
-              <strong>Sex:</strong> ${filteredSex === "all" ? "All Mice" : filteredSex.charAt(0).toUpperCase() + filteredSex.slice(1) + "s"}
-            `)
-              .style("left", (event.pageX + 10) + "px")
-              .style("top", (event.pageY - 28) + "px");
-            
-            // Update clock hand angle to point to this hour
-            // Adjust to start at 12 o'clock position
-            const hourAngle = angleScale(hour) - Math.PI/2;
-            
-            // Calculate end point of the clock hand
-            const handLength = innerRadius - 20;
-            const endX = handLength * Math.cos(hourAngle);
-            const endY = handLength * Math.sin(hourAngle);
-            
-            // Animate the clock hand to point to this hour
-            clockHand
-              .transition()
-              .duration(200)
-              .attr("x2", endX)
-              .attr("y2", endY);
-          }
-        })
-        .on("mouseout", function() {
-          // We don't hide the tooltip here anymore - it's handled by the overlay
-        });
+        .attr("data-shown", isDayShown); // Store whether day is shown
     });
   });
   
@@ -1026,42 +1085,20 @@ function createActivityHeatmap(data, filteredSex = "all", filteredEstrus = "all"
   
   // Update title to include estrus status if filtered
   let titleText = `24-Hour Activity Patterns`;
-  
   if (filteredSex !== "all") {
-    titleText += ` (${filteredSex.charAt(0).toUpperCase() + filteredSex.slice(1)}s)`;
+    titleText += ` - ${filteredSex.charAt(0).toUpperCase() + filteredSex.slice(1)}s`;
+  }
+  if (filteredSex === "female" && filteredEstrus !== "all") {
+    titleText += ` (${filteredEstrus === "estrus" ? "Estrus" : "Non-Estrus"} Days)`;
   }
   
-  if (filteredEstrus !== "all") {
-    titleText += ` - ${filteredEstrus.charAt(0).toUpperCase() + filteredEstrus.slice(1)} Days`;
-  }
-  
-  // Add title - moved up further from the visualization
   svg.append("text")
     .attr("x", 0)
-    .attr("y", -outerRadius - 50) // Increased distance
+    .attr("y", -outerRadius - 40)
     .attr("text-anchor", "middle")
     .attr("font-size", "16px")
     .attr("font-weight", "bold")
     .text(titleText);
-  
-  // Add explanation text - positioned properly below the title with space
-  svg.append("text")
-    .attr("x", 0)
-    .attr("y", -outerRadius - 30) // Increased distance from the title
-    .attr("text-anchor", "middle")
-    .attr("font-size", "12px")
-    .text("Hours of day are shown around the circle, days extend outward from center");
-  
-  // Initialize the clock hand to point to 12 o'clock
-  const defaultHour = 0; // 12 AM
-  const defaultAngle = angleScale(defaultHour) - Math.PI/2;
-  const handLength = innerRadius - 20;
-  const defaultEndX = handLength * Math.cos(defaultAngle);
-  const defaultEndY = handLength * Math.sin(defaultAngle);
-  
-  clockHand
-    .attr("x2", defaultEndX)
-    .attr("y2", defaultEndY);
     
   // Circle overlay to capture mouse movement for the whole clock
   svg.append("circle")
@@ -1561,6 +1598,19 @@ function createGenderComparisonChart(data) {
     // Clear previous chart
     container.html("");
     
+    // Create a proper tooltip div
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .attr("id", "gender-comparison-tooltip")
+        .style("opacity", 0)
+        .style("position", "absolute")
+        .style("background-color", "white")
+        .style("border", "1px solid #ddd")
+        .style("border-radius", "4px")
+        .style("padding", "10px")
+        .style("pointer-events", "none")
+        .style("z-index", "1000");
+    
     // Create SVG element
     const svg = container.append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -1757,7 +1807,6 @@ function createGenderComparisonChart(data) {
                 d3.select(this).attr("r", 5);
                 
                 // Show tooltip
-                const tooltip = d3.select("#gender-comparison-tooltip");
                 tooltip.transition()
                     .duration(200)
                     .style("opacity", 0.9);
@@ -1782,7 +1831,7 @@ function createGenderComparisonChart(data) {
                 d3.select(this).attr("r", 3);
                 
                 // Hide tooltip
-                d3.select("#gender-comparison-tooltip").transition()
+                tooltip.transition()
                     .duration(500)
                     .style("opacity", 0);
             });
