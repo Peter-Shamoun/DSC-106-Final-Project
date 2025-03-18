@@ -125,7 +125,6 @@
     <div class="introduction">
       <p>Circadian rhythms govern essential biological functions across species, operating on approximately 24-hour cycles. This interactive analysis presents data from our study of 26 laboratory mice (13 male, 13 female) monitored over multiple weeks, revealing the intricate relationships between temperature regulation, activity patterns, and gender differences.</p>
       <p>The visualizations that follow will guide you through our findings in a sequential manner, from basic temperature patterns to complex correlations between variables. Each visualization builds upon the previous one, creating a cumulative understanding of circadian biology.</p>
-      <p>Our comprehensive study utilized subcutaneous temperature sensors and infrared motion detectors to continuously track physiological parameters in a controlled laboratory environment with a consistent 12-hour light/dark cycle. Data was collected at 5-minute intervals throughout the study period, generating over 20,000 data points per subject.</p>
     </div>
     
     <section class="visualization-section">
@@ -139,7 +138,7 @@
         </div>
         <div id="visualization1" class="svg-container" aria-label="Mouse Activity vs. Temperature scatter plot" role="img" style="height: 400px;"></div>
         <div class="chart-description">
-          <p>This scatter plot reveals the dynamic relationship between activity levels and body temperature. Each point represents a single measurement, with males shown in blue and females in red. The clear positive correlation demonstrates how increased activity is associated with higher body temperatures, though the relationship is not strictly linear.</p>
+          <p>This scatter plot reveals the dynamic relationship between activity levels and body temperature. Each point represents a single measurement, with males shown in blue and females in red. The clear positive correlation demonstrates how increased activity is associated with higher body temperatures, though the relationship is not strictly linear. This plot also reveals outliers activity and temprature levels in certain mice, which we will explore later in the analysis.</p>
         </div>
         <div id="tooltip" class="tooltip" style="opacity: 0;"></div>
       </div>
@@ -147,7 +146,7 @@
       <div class="key-observations">
         <h4>Key Observations:</h4>
         <ul>
-          <li>Temperature range spans from 35.0°C to 38.5°C, with most measurements clustering between 36.0-37.5°C</li>
+          <li>Temperature range spans from 35.0°C to 40°C, with most measurements clustering between 35.0-38°C</li>
           <li>Female mice (red) maintain slightly higher average temperatures compared to males (blue)</li>
           <li>Activity levels show a wide distribution (0-180 units), with most activity occurring below 100 units</li>
           <li>The relationship between activity and temperature shows a clear positive correlation but plateaus at higher activity levels</li>
@@ -178,7 +177,7 @@
         <div class="chart-description">
           <p>This time series visualization shows the cyclic nature of body temperature regulation and activity levels. Males (blue) and females (red) display clear rhythmic patterns, with temperatures and activity cycling approximately every 24 hours. The overlapping lines from multiple mice demonstrate the consistency of these patterns across individuals. Click any line to focus on a single mouse's temperature or activity profile.</p>
         </div>
-        
+      </div>
 
       <div class="key-observations">
         <h4>Key Observations:</h4>
@@ -192,15 +191,75 @@
       </div>
 
       <div class="analysis-notes">
-        <h4>Chronobiological Significance:</h4>
-        <p>The regular oscillation of body temperature represents a fundamental output of the circadian clock. The consistency of these cycles across days and between individuals demonstrates the precision of biological timing mechanisms. Sex-based differences in temperature profiles suggest hormonal influences on thermoregulation, with females maintaining generally higher temperatures throughout the cycle. These patterns provide valuable insights into both circadian biology and sex-specific physiological regulation.</p>
+        <h4>Why This Matters:</h4>
+        <p>The regular daily patterns of body temperature show how the body's internal clock works. These patterns stay consistent day 
+          after day and are similar across different mice, showing how precise the body's timing system is. The differences between male and 
+          female mice suggest that hormones affect body temperature regulation, with females generally having higher temperatures throughout the day.</p>
+      <hr class="section-divider" style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 20px 0;">
+          <p>When we click on a mouse, we can examine outliers individually, we will take this process one step further in the next visualization.</p>
       </div>
     </section>
 
     <section class="visualization-section">
-      <h2>3. Activity Patterns</h2>
-      <p>Mice exhibit distinct daily activity patterns that reflect their circadian rhythms and behavioral adaptations. This innovative circular visualization provides a unique perspective on how activity levels fluctuate throughout the 24-hour cycle across multiple days.</p>
-      <p>By arranging time in a clock-like circular format, we can more intuitively see patterns aligned with the natural day-night cycle, revealing when mice are most active and how these patterns evolve over time.</p>
+      <h2>3. Gender Comparison with Outlier Analysis</h2>
+      <p>This visualization examines how temperature and activity patterns differ between male and female mice over a concentrated time period. The averages for each gender reveal distinct biological patterns, while the ability to select individual mice demonstrates how specific subjects may vary from their gender's average.</p>
+      <p>Use the controls below to select a specific mouse and observe how its patterns deviate from the gender average. This analysis helps identify outliers and understand the range of individual variation within each gender group.</p>
+      
+      <div class="visualization-container">
+        <h3>Gender Averages with Outlier Comparison</h3>
+        <div id="comparison-controls" class="filter-container">
+          <div>
+            <label for="metric-select">Metric:</label>
+            <select id="metric-select" class="form-select">
+              <option value="temperature">Temperature</option>
+              <option value="activity">Activity</option>
+            </select>
+          </div>
+          <div>
+            <label for="mouse-select">Select Individual Mouse:</label>
+            <select id="mouse-select" class="form-select">
+              <option value="none">None (Show Averages Only)</option>
+              <!-- Options will be dynamically added by JavaScript -->
+            </select>
+          </div>
+          <div>
+            <label for="time-range">Time Range:</label>
+            <select id="time-range" class="form-select">
+              <option value="24">24 Hours</option>
+              <option value="48">48 Hours</option>
+              <option value="72">72 Hours</option>
+            </select>
+          </div>
+        </div>
+        <div id="gender-comparison-chart" class="svg-container" aria-label="Gender comparison chart showing average temperature or activity by sex with optional individual mouse data" role="img" style="height: 500px;"></div>
+        <div class="chart-description">
+          <p>This line chart displays the average temperature or activity values for male (blue) and female (red) mice over time. When an individual mouse is selected, its data is shown as a dotted line, allowing you to compare how it deviates from its gender's average. The shaded area represents the standard deviation within each gender group, showing the typical range of variation.</p>
+        </div>
+        <div id="gender-comparison-tooltip" class="tooltip" style="opacity: 0;"></div>
+      </div>
+
+      <div class="key-observations">
+        <h4>Key Findings:</h4>
+        <ul>
+          <li>Individual mice can exhibit up to 2°C deviation from their gender's average temperature, particularly for mice that have lower activity levels.</li>
+          <li>Outlier mice with consistently higher temperatures often follow the general temprature trend of their gender, but at a higher level.</li>
+          <li>However, lower temprature mice often do not follow the general trend of their gender, often having an inverse temprature pattern.</li>
+          <li>Several individual mice demonstrated inverse activity patterns compared to their gender average, being most active when others were resting</li>
+          <li>Activity outliers diverge much more from the average than the temperature outliers.</li>
+          <li>Mouse Male 3 consistently showed the most extreme deviation, with an activity peak 100 activity units above the male average!</li>
+        </ul>
+      </div>
+      <div class="analysis-notes">
+        <hr class="section-divider" style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 20px 0;">
+        <p>While the time series visualization reveals important patterns of individual variation, it remains challenging to visualize how these activity patterns distribute across the full 24-hour cycle. To address this limitation, our next visualization transforms these linear patterns into a circular heatmap that intuitively maps activity levels onto a clock-like representation, making it easier to identify when peak activity occurs throughout the day and how these patterns persist across multiple days.</p>
+      </div>
+    </section>
+
+    <section class="visualization-section">
+      <h2>4. Activity Patterns</h2>
+      <p>Mice exhibit distinct daily activity patterns that reflect their circadian rhythms and behavioral adaptations. 
+        This visualization provides a perspective on how activity levels fluctuate throughout the 24-hour cycle across multiple days.</p>
+      <p>The 24-hour clock allows us to more intuitively see patterns aligned with the natural day-night cycle, revealing when mice are most active and how these patterns change over time.</p>
       
       <div class="visualization-container">
         <h3>Activity Heatmap</h3>
@@ -221,39 +280,6 @@
           <li>Female mice generally exhibit higher activity levels during peak periods compared to males</li>
           <li>Males have more spread out activity levels, with them showing very low activity levels in the evening.</li>
           <li>Female mice show distinct activity patterns during estrus cycles, with increased activity during estrus days compared to non-estrus days</li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="visualization-section">
-      <h2>4. Correlation Between Temperature and Activity</h2>
-      <p>TODO</p>
-      <p>TODO</p>
-      
-      <div class="visualization-container">
-        <h3>Activity vs Temperature Scatter Plot</h3>
-        <div id="scatter-chart" class="svg-container" aria-label="Activity vs Temperature scatter plot" role="img" style="height: 400px;"></div>
-        <div class="chart-description">
-          <p>TODO</p>
-        </div>
-      </div>
-      
-      <div class="visualization-container">
-        <h3>Circadian Pattern Analysis</h3>
-        <div id="pattern-chart" class="svg-container" aria-label="Circadian pattern chart" role="img" style="height: 400px;"></div>
-        <div class="chart-description">
-          <p>TODO</p>
-        </div>
-      </div>
-
-      <div class="key-observations">
-        <h4>Observations:</h4>
-        <ul>
-          <li>TODO</li>
-          <li>TODO</li>
-          <li>TODO</li>
-          <li>TODO</li>
-          <li>TODO</li>
         </ul>
       </div>
     </section>

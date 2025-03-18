@@ -33,6 +33,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (sexFilter && sexFilter.value !== "female") {
       d3.select("#estrus-filter3").property("disabled", true);
     }
+
+    // Set up the gender comparison visualization
+    setupGenderComparisonControls(data);
+    createGenderComparisonChart(data);
   } catch (error) {
     console.error("Error loading or processing data:", error);
     d3.select("#visualization1").html('<div class="alert alert-danger">Error loading data. Please try again later.</div>');
@@ -1283,4 +1287,612 @@ function setupHeatmapFilters() {
       if (d === "estrus") return "Estrus Days";
       if (d === "non-estrus") return "Non-Estrus Days";
     });
+}
+
+/**
+ * Identifies outlier mice in the dataset based on their deviation from their gender average
+ * @param {Array} data - The dataset
+ * @param {string} metric - The metric to check for outliers ("temperature" or "activity")
+ * @returns {Object} Object containing male and female outliers
+ */
+function identifyOutlierMice(data, metric) {
+    // Group data by mouse ID
+    const mouseGroups = d3.group(data, d => d.id);
+    
+    // Calculate average metric value for each mouse
+    const mouseAverages = Array.from(mouseGroups, ([id, values]) => {
+        const sex = values[0].sex;
+        const avgValue = d3.mean(values, d => d[metric]);
+        return { id, sex, avgValue };
+    });
+    
+    // Group by sex
+    const maleAverages = mouseAverages.filter(d => d.sex === 'male');
+    const femaleAverages = mouseAverages.filter(d => d.sex === 'female');
+    
+    // Calculate overall gender averages
+    const maleOverallAvg = d3.mean(maleAverages, d => d.avgValue);
+    const femaleOverallAvg = d3.mean(femaleAverages, d => d.avgValue);
+    
+    // Calculate standard deviations
+    const maleStdDev = d3.deviation(maleAverages, d => d.avgValue);
+    const femaleStdDev = d3.deviation(femaleAverages, d => d.avgValue);
+    
+    // Calculate z-scores for all mice
+    const maleWithZScores = maleAverages.map(mouse => {
+        const zScore = Math.abs((mouse.avgValue - maleOverallAvg) / maleStdDev);
+        return {
+            ...mouse,
+            zScore,
+            direction: mouse.avgValue > maleOverallAvg ? 'high' : 'low'
+        };
+    });
+    
+    const femaleWithZScores = femaleAverages.map(mouse => {
+        const zScore = Math.abs((mouse.avgValue - femaleOverallAvg) / femaleStdDev);
+        return {
+            ...mouse,
+            zScore,
+            direction: mouse.avgValue > femaleOverallAvg ? 'high' : 'low'
+        };
+    });
+    
+    // Sort by z-score (highest first)
+    maleWithZScores.sort((a, b) => b.zScore - a.zScore);
+    femaleWithZScores.sort((a, b) => b.zScore - a.zScore);
+    
+    // Get top outliers for each gender (adjust threshold if needed to get at least 3 per sex)
+    // Try with a z-score threshold of 1.0 to get more outliers
+    let maleOutliers = maleWithZScores.filter(mouse => mouse.zScore > 1.0);
+    let femaleOutliers = femaleWithZScores.filter(mouse => mouse.zScore > 1.0);
+    
+    // If we still don't have enough, just take the top 3 from each gender
+    if (maleOutliers.length < 3) {
+        maleOutliers = maleWithZScores.slice(0, 3);
+    }
+    if (femaleOutliers.length < 3) {
+        femaleOutliers = femaleWithZScores.slice(0, 3);
+    }
+    
+    return {
+        male: maleOutliers.slice(0, 5), // Limit to top 5
+        female: femaleOutliers.slice(0, 5) // Limit to top 5
+    };
+}
+
+// Function to initialize gender comparison visualization and controls
+function setupGenderComparisonControls(data) {
+    // Get selected metric (default to temperature)
+    const metric = d3.select("#metric-select").node()?.value || "temperature";
+    
+    // Identify outlier mice
+    const outlierMiceByGender = identifyOutlierMice(data, metric);
+    
+    // Populate the mouse select dropdown
+    const mouseSelect = d3.select("#mouse-select");
+    
+    // Clear existing options except the first one
+    mouseSelect.selectAll("option:not(:first-child)").remove();
+    
+    // Add male outlier options
+    outlierMiceByGender.male.forEach((mouse, index) => {
+        // Remove direction text
+        mouseSelect.append("option")
+            .attr("value", mouse.id)
+            .text(`Male outlier ${index + 1}`);
+    });
+    
+    // Add female outlier options - limit to 3 for temperature
+    const femaleOutliers = metric === "temperature" 
+        ? outlierMiceByGender.female.slice(0, 3) 
+        : outlierMiceByGender.female;
+    
+    femaleOutliers.forEach((mouse, index) => {
+        // Remove direction text
+        mouseSelect.append("option")
+            .attr("value", mouse.id)
+            .text(`Female outlier ${index + 1}`);
+    });
+    
+    // Add event listeners for the control elements
+    d3.select("#metric-select").on("change", function() {
+        // When metric changes, we need to recalculate outliers
+        setupGenderComparisonControls(data);
+        createGenderComparisonChart(data);
+    });
+    
+    d3.select("#mouse-select").on("change", function() {
+        createGenderComparisonChart(data);
+    });
+    
+    d3.select("#time-range").on("change", function() {
+        createGenderComparisonChart(data);
+    });
+    
+    // Remove "all" option from time-range if it exists
+    const timeRangeSelect = d3.select("#time-range");
+    timeRangeSelect.selectAll("option[value='all']").remove();
+}
+
+/**
+ * Calculates rolling averages for male and female mice
+ * @param {Array} data - The dataset
+ * @param {string} metric - The metric to calculate averages for ("temperature" or "activity")
+ * @param {number} timeRange - The time range in hours (24, 48)
+ * @returns {Object} Object containing male and female averages with stats
+ */
+function calculateGenderAverages(data, metric, timeRange) {
+    // Filter data by time range
+    let filteredData = data;
+    const hours = parseInt(timeRange || 24);
+    
+    // Get the latest timestamp in the data
+    const maxTimestamp = d3.max(data, d => d.minute);
+    // Calculate the cutoff time
+    const cutoffTime = maxTimestamp - (hours * 60); // hours to minutes
+    filteredData = data.filter(d => d.minute >= cutoffTime);
+    
+    // Group data by sex, then by timestamp
+    const maleData = filteredData.filter(d => d.sex === 'male');
+    const femaleData = filteredData.filter(d => d.sex === 'female');
+    
+    // Group by timestamp (rounded to 5-minute intervals)
+    const timeGroupedMale = d3.group(maleData, d => Math.floor(d.minute / 5) * 5);
+    const timeGroupedFemale = d3.group(femaleData, d => Math.floor(d.minute / 5) * 5);
+    
+    // Calculate averages and stats for each timestamp group
+    const maleAverages = Array.from(timeGroupedMale, ([timestamp, values]) => {
+        const metricValues = values.map(d => d[metric]);
+        let stdDev = d3.deviation(metricValues);
+        
+        // Scale down standard deviation for improved visualization
+        if (metric === "temperature") {
+            // For temperature, scale down to around 60% of original
+            stdDev = stdDev * 0.6;
+        } else {
+            // For activity, apply a more aggressive scaling and cap
+            if (stdDev > 30) {
+                stdDev = 20; // Hard cap at 20
+            } else {
+                stdDev = stdDev * 0.5; // Scale down to 50%
+            }
+        }
+        
+        return {
+            timestamp: new Date(parseInt(timestamp) * 60 * 1000),
+            mean: d3.mean(metricValues),
+            stdDev: stdDev,
+            min: d3.min(metricValues),
+            max: d3.max(metricValues),
+            sex: 'male'
+        };
+    });
+    
+    const femaleAverages = Array.from(timeGroupedFemale, ([timestamp, values]) => {
+        const metricValues = values.map(d => d[metric]);
+        let stdDev = d3.deviation(metricValues);
+        
+        // Scale down standard deviation for improved visualization
+        if (metric === "temperature") {
+            // For temperature, scale down to around 60% of original
+            stdDev = stdDev * 0.6;
+        } else {
+            // For activity, apply a more aggressive scaling and cap
+            if (stdDev > 30) {
+                stdDev = 20; // Hard cap at 20
+            } else {
+                stdDev = stdDev * 0.5; // Scale down to 50%
+            }
+        }
+        
+        return {
+            timestamp: new Date(parseInt(timestamp) * 60 * 1000),
+            mean: d3.mean(metricValues),
+            stdDev: stdDev,
+            min: d3.min(metricValues),
+            max: d3.max(metricValues),
+            sex: 'female'
+        };
+    });
+    
+    // Sort by timestamp
+    maleAverages.sort((a, b) => a.timestamp - b.timestamp);
+    femaleAverages.sort((a, b) => a.timestamp - b.timestamp);
+    
+    return {
+        male: maleAverages,
+        female: femaleAverages
+    };
+}
+
+/**
+ * Filters data for a specific mouse
+ * @param {Array} data - The dataset
+ * @param {string} mouseId - The ID of the mouse to filter for
+ * @param {number} timeRange - The time range in hours (24, 48)
+ * @returns {Array} Filtered data for the specified mouse
+ */
+function getMouseData(data, mouseId, timeRange) {
+    // Filter for specific mouse
+    let mouseData = data.filter(d => d.id === mouseId);
+    
+    // Filter by time range
+    const hours = parseInt(timeRange || 24);
+    
+    // Get the latest timestamp in the data
+    const maxTimestamp = d3.max(data, d => d.minute);
+    // Calculate the cutoff time
+    const cutoffTime = maxTimestamp - (hours * 60); // hours to minutes
+    mouseData = mouseData.filter(d => d.minute >= cutoffTime);
+    
+    // Sort by timestamp
+    mouseData.sort((a, b) => a.minute - b.minute);
+    
+    return mouseData;
+}
+
+/**
+ * Creates the gender comparison chart
+ * @param {Array} data - The dataset
+ */
+function createGenderComparisonChart(data) {
+    // Get selected values from controls
+    const metric = d3.select("#metric-select").node().value;
+    const selectedMouseId = d3.select("#mouse-select").node().value;
+    const timeRange = d3.select("#time-range").node().value;
+    
+    // Calculate gender averages
+    const averages = calculateGenderAverages(data, metric, timeRange);
+    
+    // Get individual mouse data if selected
+    let mouseData = null;
+    if (selectedMouseId !== "none") {
+        mouseData = getMouseData(data, selectedMouseId, timeRange);
+        // Get the sex of the selected mouse
+        const mouseSex = mouseData.length > 0 ? mouseData[0].sex : null;
+    }
+    
+    // Set up dimensions and margins - increase right margin for legend
+    const margin = { top: 50, right: 180, bottom: 70, left: 80 };
+    const container = d3.select("#gender-comparison-chart");
+    const width = container.node().getBoundingClientRect().width - margin.left - margin.right;
+    const height = container.node().getBoundingClientRect().height - margin.top - margin.bottom;
+    
+    // Clear previous chart
+    container.html("");
+    
+    // Create SVG element
+    const svg = container.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+    
+    // Combine male and female data for domain calculation
+    const allAverageData = [...averages.male, ...averages.female];
+    
+    // Create scales
+    const xScale = d3.scaleTime()
+        .domain(d3.extent(allAverageData, d => d.timestamp))
+        .range([0, width]);
+    
+    // Determine Y scale domain based on metric
+    let yDomain, yAxisLabel;
+    if (metric === "temperature") {
+        // For temperature, use a dynamic range that accounts for outliers
+        let minTemp, maxTemp;
+        
+        // Check if we have individual mouse data to consider
+        if (mouseData && mouseData.length > 0) {
+            const minMouseTemp = d3.min(mouseData, d => d[metric]);
+            const maxMouseTemp = d3.max(mouseData, d => d[metric]);
+            const minAvgTemp = d3.min(allAverageData, d => d.mean - d.stdDev);
+            const maxAvgTemp = d3.max(allAverageData, d => d.mean + d.stdDev);
+            
+            minTemp = Math.min(minMouseTemp, minAvgTemp);
+            maxTemp = Math.max(maxMouseTemp, maxAvgTemp);
+        } else {
+            minTemp = d3.min(allAverageData, d => d.mean - d.stdDev);
+            maxTemp = d3.max(allAverageData, d => d.mean + d.stdDev);
+        }
+        
+        // Add padding to the domain (10% of range)
+        const padding = (maxTemp - minTemp) * 0.1;
+        yDomain = [minTemp - padding, maxTemp + padding];
+        yAxisLabel = "Body Temperature (°C)";
+    } else {
+        // For activity, use a range from 0 to max value with increased padding to prevent clipping
+        let maxActivity;
+        
+        // If we have selected mouse data, check if it might exceed the average ranges
+        if (mouseData && mouseData.length > 0) {
+            const maxMouseActivity = d3.max(mouseData, d => d[metric]);
+            const maxAvgActivity = d3.max(allAverageData, d => d.mean + d.stdDev);
+            maxActivity = Math.max(maxMouseActivity, maxAvgActivity);
+        } else {
+            maxActivity = d3.max(allAverageData, d => d.mean + d.stdDev);
+        }
+        
+        // Add 25% padding to the top to ensure outliers fit
+        yDomain = [0, maxActivity * 1.25];
+        yAxisLabel = "Activity Level";
+    }
+    
+    const yScale = d3.scaleLinear()
+        .domain(yDomain)
+        .range([height, 0]);
+    
+    // Create axes
+    const xAxis = d3.axisBottom(xScale)
+        .ticks(width > 600 ? 10 : 5)
+        .tickFormat(d3.timeFormat("%H:%M"));
+    
+    const yAxis = d3.axisLeft(yScale)
+        .ticks(height > 300 ? 10 : 5);
+    
+    // Add X axis
+    svg.append("g")
+        .attr("class", "x-axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-45)");
+    
+    // Add X axis label
+    svg.append("text")
+        .attr("class", "axis-label")
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", height + margin.bottom - 10)
+        .text("Time of Day");
+    
+    // Add Y axis
+    svg.append("g")
+        .attr("class", "y-axis")
+        .call(yAxis);
+    
+    // Add Y axis label
+    svg.append("text")
+        .attr("class", "axis-label")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -margin.left + 15)
+        .text(yAxisLabel);
+    
+    // Create line generators
+    const line = d3.line()
+        .x(d => xScale(d.timestamp))
+        .y(d => yScale(d.mean))
+        .curve(d3.curveMonotoneX);
+    
+    // Create area generators for standard deviation
+    const area = d3.area()
+        .x(d => xScale(d.timestamp))
+        .y0(d => yScale(d.mean - d.stdDev))
+        .y1(d => yScale(d.mean + d.stdDev))
+        .curve(d3.curveMonotoneX);
+    
+    // Create a clip path to prevent extreme values from going outside the chart
+    svg.append("clipPath")
+        .attr("id", "chart-area")
+        .append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("x", 0)
+        .attr("y", 0);
+    
+    // Add standard deviation areas with more subtle colors
+    svg.append("path")
+        .datum(averages.male)
+        .attr("class", "std-area male")
+        .attr("fill", "rgba(52, 152, 219, 0.15)")
+        .attr("clip-path", "url(#chart-area)")
+        .attr("d", area);
+    
+    svg.append("path")
+        .datum(averages.female)
+        .attr("class", "std-area female")
+        .attr("fill", "rgba(231, 76, 60, 0.15)")
+        .attr("clip-path", "url(#chart-area)")
+        .attr("d", area);
+    
+    // Add average lines
+    svg.append("path")
+        .datum(averages.male)
+        .attr("class", "line male")
+        .attr("fill", "none")
+        .attr("stroke", "var(--color-male)")
+        .attr("stroke-width", 2.5)
+        .attr("clip-path", "url(#chart-area)")
+        .attr("d", line);
+    
+    svg.append("path")
+        .datum(averages.female)
+        .attr("class", "line female")
+        .attr("fill", "none")
+        .attr("stroke", "var(--color-female)")
+        .attr("stroke-width", 2.5)
+        .attr("clip-path", "url(#chart-area)")
+        .attr("d", line);
+    
+    // Add individual mouse data if selected
+    if (mouseData && mouseData.length > 0) {
+        const mouseSex = mouseData[0].sex;
+        const mouseColor = mouseSex === 'female' ? "var(--color-female)" : "var(--color-male)";
+        
+        // Create line for individual mouse
+        const mouseLine = d3.line()
+            .x(d => xScale(new Date(d.minute * 60 * 1000)))
+            .y(d => yScale(d[metric]))
+            .curve(d3.curveMonotoneX);
+        
+        svg.append("path")
+            .datum(mouseData)
+            .attr("class", "line individual")
+            .attr("fill", "none")
+            .attr("stroke", mouseColor)
+            .attr("stroke-width", 1.5)
+            .attr("stroke-dasharray", "5,5")
+            .attr("clip-path", "url(#chart-area)")
+            .attr("d", mouseLine);
+        
+        // Add dots for individual mouse data points (with clipping)
+        const dots = svg.append("g")
+            .attr("clip-path", "url(#chart-area)");
+        
+        dots.selectAll(".dot")
+            .data(mouseData)
+            .enter()
+            .append("circle")
+            .attr("class", "dot")
+            .attr("cx", d => xScale(new Date(d.minute * 60 * 1000)))
+            .attr("cy", d => yScale(d[metric]))
+            .attr("r", 3)
+            .attr("fill", mouseColor)
+            .on("mouseover", function(event, d) {
+                d3.select(this).attr("r", 5);
+                
+                // Show tooltip
+                const tooltip = d3.select("#gender-comparison-tooltip");
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0.9);
+                
+                const formattedTime = new Date(d.minute * 60 * 1000).toLocaleTimeString();
+                const formattedValue = metric === "temperature" 
+                    ? `${d[metric].toFixed(1)}°C` 
+                    : d[metric].toFixed(1);
+                
+                // Find the mouse display text from dropdown
+                const selectedOption = d3.select("#mouse-select").select(`option[value="${d.id}"]`).text();
+                
+                tooltip.html(`
+                    <strong>${selectedOption}</strong><br>
+                    Time: ${formattedTime}<br>
+                    ${metric === "temperature" ? "Temperature" : "Activity"}: ${formattedValue}
+                `)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function() {
+                d3.select(this).attr("r", 3);
+                
+                // Hide tooltip
+                d3.select("#gender-comparison-tooltip").transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
+    }
+    
+    // Create a background for the legend to make text more readable
+    svg.append("rect")
+        .attr("x", width + 10)
+        .attr("y", 0)
+        .attr("width", 160)
+        .attr("height", 110)
+        .attr("fill", "white")
+        .attr("opacity", 0.7)
+        .attr("rx", 5);
+    
+    // Add legend with more space
+    const legend = svg.append("g")
+        .attr("class", "legend")
+        .attr("transform", `translate(${width + 20}, 20)`);
+    
+    // Male average
+    legend.append("line")
+        .attr("x1", 0)
+        .attr("y1", 0)
+        .attr("x2", 20)
+        .attr("y2", 0)
+        .attr("stroke", "var(--color-male)")
+        .attr("stroke-width", 2.5);
+    
+    legend.append("text")
+        .attr("x", 25)
+        .attr("y", 4)
+        .text("Male Average");
+    
+    // Female average
+    legend.append("line")
+        .attr("x1", 0)
+        .attr("y1", 20)
+        .attr("x2", 20)
+        .attr("y2", 20)
+        .attr("stroke", "var(--color-female)")
+        .attr("stroke-width", 2.5);
+    
+    legend.append("text")
+        .attr("x", 25)
+        .attr("y", 24)
+        .text("Female Average");
+    
+    // Male standard deviation
+    legend.append("rect")
+        .attr("x", 0)
+        .attr("y", 40)
+        .attr("width", 20)
+        .attr("height", 10)
+        .attr("fill", "rgba(52, 152, 219, 0.15)");
+    
+    legend.append("text")
+        .attr("x", 25)
+        .attr("y", 48)
+        .text("Male Std Dev");
+    
+    // Female standard deviation
+    legend.append("rect")
+        .attr("x", 0)
+        .attr("y", 60)
+        .attr("width", 20)
+        .attr("height", 10)
+        .attr("fill", "rgba(231, 76, 60, 0.15)");
+    
+    legend.append("text")
+        .attr("x", 25)
+        .attr("y", 68)
+        .text("Female Std Dev");
+    
+    // Individual mouse (if selected)
+    if (mouseData && mouseData.length > 0) {
+        const mouseSex = mouseData[0].sex;
+        const mouseColor = mouseSex === 'female' ? "var(--color-female)" : "var(--color-male)";
+        
+        legend.append("line")
+            .attr("x1", 0)
+            .attr("y1", 80)
+            .attr("x2", 20)
+            .attr("y2", 80)
+            .attr("stroke", mouseColor)
+            .attr("stroke-width", 1.5)
+            .attr("stroke-dasharray", "5,5");
+        
+        legend.append("circle")
+            .attr("cx", 10)
+            .attr("cy", 80)
+            .attr("r", 3)
+            .attr("fill", mouseColor);
+        
+        // Get the selected option text
+        const selectedOption = d3.select("#mouse-select").select(`option[value="${selectedMouseId}"]`).text();
+        
+        legend.append("text")
+            .attr("x", 25)
+            .attr("y", 84)
+            .text("Selected Mouse");
+    }
+    
+    // Add chart title
+    svg.append("text")
+        .attr("class", "chart-title")
+        .attr("x", width / 2)
+        .attr("y", -20)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .text(`${metric === "temperature" ? "Temperature" : "Activity"} Comparison by Sex`);
 }
