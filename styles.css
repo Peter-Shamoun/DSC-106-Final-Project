@@ -2391,33 +2391,44 @@ template {
 
 /* ===== Conclusion Section ===== */
 .conclusion {
-    margin: 5em 0 3em;
+    margin: 6em 0 3em;
     padding: 3em 0;
-    border-top: 1px solid var(--color-border);
     position: relative;
+    border-top: 2px solid var(--color-primary-light);
 }
 
 .conclusion::before {
     content: '';
     position: absolute;
-    top: -10px;
+    top: -8px;
     left: 50%;
     transform: translateX(-50%);
-    width: 20px;
-    height: 20px;
+    width: 120px;
+    height: 16px;
     background-color: var(--bg-color);
-    border: 1px solid var(--color-border);
-    border-radius: 50%;
+}
+
+.conclusion::after {
+    content: '●';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    color: var(--color-primary);
+    background-color: var(--bg-color);
+    padding: 0 15px;
 }
 
 .conclusion h2 {
     color: var(--color-primary);
-    font-size: 1.9em;
+    font-size: 2.1em;
     text-align: center;
     margin-bottom: 1.5em;
     position: relative;
-    padding-bottom: 0.5em;
+    padding-bottom: 0.7em;
     border-bottom: none;
+    letter-spacing: -0.02em;
 }
 
 .conclusion h2::after {
@@ -2426,28 +2437,99 @@ template {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 60px;
-    height: 2px;
-    background-color: var(--color-primary);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, var(--color-primary-light), var(--color-primary), var(--color-primary-light));
+    border-radius: 3px;
 }
 
 .conclusion p {
-    font-size: 1.1em;
+    font-size: 1.15em;
     line-height: 1.7;
-    margin: 1.2em auto;
+    margin: 1.4em auto;
     max-width: 900px;
+    color: var(--color-text);
 }
 
-/* ===== Hover effects for visualization sections ===== */
-.visualization-section {
+.conclusion p:first-of-type {
+    font-weight: 500;
+}
+
+.conclusion ul {
+    max-width: 900px;
+    margin: 2em auto;
+    padding-left: 1.8em;
+    list-style-type: none;
+}
+
+.conclusion li {
     position: relative;
-    transition: transform 0.3s ease-out;
+    margin: 0.9em 0;
+    padding-left: 1.5em;
+    max-width: none;
+    font-size: 1.05em;
+    line-height: 1.6;
 }
 
-.visualization-section:hover::before {
-    transform: translateX(-50%) scale(1.2);
+.conclusion li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
     background-color: var(--color-primary-light);
-    transition: transform 0.3s ease-out, background-color 0.3s ease-out;
+}
+
+.conclusion h4 {
+    color: var(--color-primary-dark);
+    font-size: 1.3em;
+    margin: 2em 0 1em;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0 1.5em;
+}
+
+.conclusion h4::before,
+.conclusion h4::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30px;
+    height: 1px;
+    background-color: var(--color-primary-light);
+}
+
+.conclusion h4::before {
+    left: 0;
+}
+
+.conclusion h4::after {
+    right: 0;
+}
+
+@media (max-width: 768px) {
+    .conclusion {
+        margin: 4em 0 2em;
+        padding: 2em 0;
+    }
+    
+    .conclusion h2 {
+        font-size: 1.8em;
+    }
+    
+    .conclusion p {
+        font-size: 1.05em;
+        padding: 0 1em;
+    }
+    
+    .conclusion ul {
+        padding-left: 1em;
+    }
 }
 
 /* ===== ABT Narrative Framework Styles ===== */
